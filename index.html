@@ -123,6 +123,14 @@
             --md-sys-spacing-xl: 32px;
             --md-sys-spacing-xxl: 48px;
 
+            /* Compact Mode Spacing - 緊湊模式間距 */
+            --md-sys-compact-spacing-xs: 2px;
+            --md-sys-compact-spacing-sm: 4px;
+            --md-sys-compact-spacing-md: 8px;
+            --md-sys-compact-spacing-lg: 12px;
+            --md-sys-compact-spacing-xl: 16px;
+            --md-sys-compact-spacing-xxl: 24px;
+
             /* Border Radius */
             --md-sys-shape-corner-none: 0px;
             --md-sys-shape-corner-extra-small: 4px;
@@ -1226,9 +1234,195 @@
             color: var(--md-sys-color-on-surface-variant);
             font-size: var(--md-sys-typescale-body-medium-size);
         }
+
+        /* ========================================
+           緊湊檢視模式 - Compact View Mode
+           ======================================== */
+        
+        /* 緊湊模式切換按鈕 */
+        .compact-toggle {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            z-index: 1000;
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border: none;
+            border-radius: var(--md-sys-shape-corner-full);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--md-sys-elevation-level3);
+            transition: all 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+            font-size: 20px;
+        }
+
+        .compact-toggle:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            transform: scale(1.05);
+        }
+
+        /* 緊湊模式主體樣式 */
+        body.compact-mode .header {
+            padding: var(--md-sys-compact-spacing-lg) var(--md-sys-compact-spacing-xl);
+        }
+
+        body.compact-mode .header h1 {
+            font-size: var(--md-sys-typescale-title-large-size);
+            line-height: var(--md-sys-typescale-title-large-line-height);
+            margin-bottom: var(--md-sys-compact-spacing-xs);
+        }
+
+        body.compact-mode .header p {
+            font-size: var(--md-sys-typescale-body-medium-size);
+            line-height: var(--md-sys-typescale-body-medium-line-height);
+            margin-bottom: var(--md-sys-compact-spacing-sm);
+        }
+
+        body.compact-mode .controls {
+            padding: var(--md-sys-compact-spacing-lg);
+        }
+
+        body.compact-mode .search-section {
+            gap: var(--md-sys-compact-spacing-sm);
+            margin-bottom: var(--md-sys-compact-spacing-md);
+        }
+
+        body.compact-mode .search-input {
+            padding: var(--md-sys-compact-spacing-sm) var(--md-sys-compact-spacing-md);
+            font-size: var(--md-sys-typescale-body-medium-size);
+            min-height: 36px;
+        }
+
+        body.compact-mode .search-mode-indicator {
+            margin-top: var(--md-sys-compact-spacing-xs);
+            padding: var(--md-sys-compact-spacing-xs) var(--md-sys-compact-spacing-sm);
+            font-size: var(--md-sys-typescale-body-small-size);
+        }
+
+        body.compact-mode .filter-container {
+            margin-top: var(--md-sys-compact-spacing-sm);
+        }
+
+        body.compact-mode .filter-drawer-toggle {
+            gap: var(--md-sys-compact-spacing-xs);
+            padding: var(--md-sys-compact-spacing-sm) var(--md-sys-compact-spacing-md);
+        }
+
+        body.compact-mode .filter-section {
+            padding: var(--md-sys-compact-spacing-md);
+        }
+
+        body.compact-mode .filter-group {
+            gap: var(--md-sys-compact-spacing-sm);
+        }
+
+        body.compact-mode .multiselect-toggle {
+            padding: var(--md-sys-compact-spacing-sm) var(--md-sys-compact-spacing-md);
+            min-height: 32px;
+        }
+
+        body.compact-mode .multiselect-option {
+            padding: var(--md-sys-compact-spacing-sm);
+            font-size: var(--md-sys-typescale-body-small-size);
+        }
+
+        body.compact-mode .results-info {
+            margin-top: var(--md-sys-compact-spacing-md);
+            padding: var(--md-sys-compact-spacing-sm) var(--md-sys-compact-spacing-md);
+        }
+
+        body.compact-mode .results-header {
+            gap: var(--md-sys-compact-spacing-md);
+        }
+
+        body.compact-mode .action-button {
+            gap: var(--md-sys-compact-spacing-xs);
+            padding: var(--md-sys-compact-spacing-xs) var(--md-sys-compact-spacing-md);
+            min-height: 32px;
+            font-size: var(--md-sys-typescale-body-small-size);
+        }
+
+        body.compact-mode .download-option {
+            gap: var(--md-sys-compact-spacing-sm);
+            padding: var(--md-sys-compact-spacing-sm) var(--md-sys-compact-spacing-md);
+            font-size: var(--md-sys-typescale-body-small-size);
+        }
+
+        body.compact-mode .results-table th {
+            padding: var(--md-sys-compact-spacing-md);
+            font-size: var(--md-sys-typescale-body-small-size);
+        }
+
+        body.compact-mode .results-table td {
+            padding: var(--md-sys-compact-spacing-md);
+            font-size: var(--md-sys-typescale-body-small-size);
+            line-height: var(--md-sys-typescale-body-small-line-height);
+        }
+
+        body.compact-mode .sentence-content {
+            gap: var(--md-sys-compact-spacing-sm);
+        }
+
+        body.compact-mode .copy-sentence-btn {
+            padding: var(--md-sys-compact-spacing-xs);
+            width: 24px;
+            height: 24px;
+            font-size: 16px;
+        }
+
+        body.compact-mode .status-section {
+            margin-top: var(--md-sys-compact-spacing-sm);
+        }
+
+        body.compact-mode .status-text {
+            margin-bottom: var(--md-sys-compact-spacing-xs);
+            font-size: var(--md-sys-typescale-body-small-size);
+        }
+
+        body.compact-mode .cache-status {
+            gap: var(--md-sys-compact-spacing-sm);
+        }
+
+        body.compact-mode .refresh-button {
+            gap: var(--md-sys-compact-spacing-xs);
+            padding: var(--md-sys-compact-spacing-xs) var(--md-sys-compact-spacing-sm);
+            min-height: 24px;
+            font-size: var(--md-sys-typescale-body-small-size);
+        }
+
+        /* 緊湊模式響應式調整 */
+        @media (max-width: 599px) {
+            body.compact-mode .header {
+                padding: var(--md-sys-compact-spacing-md);
+            }
+            
+            body.compact-mode .controls {
+                padding: var(--md-sys-compact-spacing-sm);
+            }
+            
+            body.compact-mode .search-input {
+                padding: var(--md-sys-compact-spacing-xs) var(--md-sys-compact-spacing-sm);
+                min-height: 32px;
+            }
+            
+            body.compact-mode .results-table th,
+            body.compact-mode .results-table td {
+                padding: var(--md-sys-compact-spacing-sm);
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- 緊湊模式切換按鈕 -->
+    <button class="compact-toggle" id="compactToggle" title="切換緊湊檢視模式">
+        <span class="material-symbols-outlined">compress</span>
+    </button>
+
     <div class="container">
         <div class="header">
             <h1>vocabGem <span style="font-size: 0.7em; color: var(--md-sys-color-on-surface-variant);">詞彙寶石</span></h1>
@@ -1401,6 +1595,9 @@
         const filterContainer = document.getElementById('filterContainer');
         const filterDrawerToggle = document.getElementById('filterDrawerToggle');
         const filterContent = document.getElementById('filterContent');
+        
+        // 緊湊模式元素
+        const compactToggle = document.getElementById('compactToggle');
 
         // 全域狀態
         let isDataLoaded = false;
@@ -1426,6 +1623,9 @@
             
             // 下載功能
             downloadButton.addEventListener('click', () => toggleDownloadMenu());
+            
+            // 緊湊模式切換功能
+            compactToggle.addEventListener('click', () => toggleCompactMode());
             
             // 重新載入功能
             refreshButton.addEventListener('click', () => {
@@ -1455,6 +1655,9 @@
 
             // 監聽滾動事件來處理 sticky 控制區域的視覺效果
             setupStickyControls();
+            
+            // 初始化緊湊模式偏好設定
+            initializeCompactMode();
             
             // 監聽視窗大小變化，確保篩選器顯示正確
             window.addEventListener('resize', () => {
@@ -2366,6 +2569,42 @@
         function toggleDownloadMenu() {
             const isVisible = downloadMenu.style.display === 'block';
             downloadMenu.style.display = isVisible ? 'none' : 'block';
+        }
+
+        // 緊湊模式切換功能
+        function toggleCompactMode() {
+            const body = document.body;
+            const compactIcon = compactToggle.querySelector('.material-symbols-outlined');
+            const isCompact = body.classList.contains('compact-mode');
+            
+            if (isCompact) {
+                // 關閉緊湊模式
+                body.classList.remove('compact-mode');
+                compactIcon.textContent = 'compress';
+                compactToggle.title = '切換緊湊檢視模式';
+                
+                // 記住使用者偏好
+                localStorage.setItem('vocabGem_compactMode', 'false');
+            } else {
+                // 開啟緊湊模式
+                body.classList.add('compact-mode');
+                compactIcon.textContent = 'expand';
+                compactToggle.title = '切換正常檢視模式';
+                
+                // 記住使用者偏好
+                localStorage.setItem('vocabGem_compactMode', 'true');
+            }
+        }
+
+        // 初始化緊湊模式偏好設定
+        function initializeCompactMode() {
+            const savedCompactMode = localStorage.getItem('vocabGem_compactMode');
+            if (savedCompactMode === 'true') {
+                document.body.classList.add('compact-mode');
+                const compactIcon = compactToggle.querySelector('.material-symbols-outlined');
+                compactIcon.textContent = 'expand';
+                compactToggle.title = '切換正常檢視模式';
+            }
         }
 
         // 下載功能
