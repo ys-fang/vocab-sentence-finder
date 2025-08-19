@@ -721,7 +721,6 @@
         .content {
             padding: var(--md-sys-spacing-xl);
             margin-top: 0;
-            min-height: calc(100vh - 200px);
             background: var(--md-sys-color-surface);
             border-radius: 0 0 var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-extra-large);
         }
@@ -1108,6 +1107,13 @@
             .results-table td {
                 padding: var(--md-sys-spacing-lg);
             }
+        }
+
+        .site-footer {
+            text-align: center;
+            padding: var(--md-sys-spacing-lg);
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: var(--md-sys-typescale-body-medium-size);
         }
     </style>
 </head>
@@ -2255,5 +2261,9 @@
         // async function fetchGoogleSheetsData() { ... }
         // function parseSheetData(sheetData) { ... }
     </script>
+
+    <footer class="site-footer">
+        <p>均一教育平台 x 鄭博仁老師</p>
+    </footer>
 </body>
 </html>
