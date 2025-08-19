@@ -17,6 +17,9 @@
     <!-- docx library for Word file generation -->
     <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    
+    <!-- compromise.js library for English NLP -->
+    <script src="https://unpkg.com/compromise@latest/builds/compromise.min.js"></script>
     <style>
         /* Jutor.ai 真實配色方案 v2 - 更簡潔的詮釋 */
         :root {
@@ -2028,12 +2031,107 @@
             'thrown': ['throw', 'throws', 'throwing', 'threw']
         };
 
-        // 生成單字的所有可能變化形式
+        // 檢查規則是否會縮短單字
+        function isShortening(rule, originalWord) {
+            // 計算套用規則後的長度變化
+            const match = originalWord.match(rule.pattern);
+            if (!match) return false;
+            
+            const originalLength = match[0].length;
+            const replacementLength = rule.replacement.length;
+            return replacementLength < originalLength;
+        }
+
+        // 基本英文詞典（常用單字）
+        const basicDictionary = new Set([
+            // 常見短單字
+            'a', 'an', 'as', 'at', 'be', 'by', 'do', 'go', 'he', 'i', 'if', 'in', 'is', 'it', 'me', 'my', 'no', 'of', 'on', 'or', 'so', 'to', 'up', 'we',
+            // 常見動詞
+            'am', 'are', 'was', 'were', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'can', 'could', 'may', 'might', 'must', 'shall', 'should',
+            'get', 'got', 'give', 'gave', 'given', 'go', 'goes', 'went', 'gone', 'come', 'came', 'take', 'took', 'taken', 'see', 'saw', 'seen', 'know', 'knew', 'known',
+            'think', 'thought', 'say', 'said', 'tell', 'told', 'make', 'made', 'find', 'found', 'want', 'like', 'look', 'use', 'work', 'try', 'ask', 'need', 'feel', 'felt',
+            'seem', 'leave', 'left', 'put', 'mean', 'meant', 'keep', 'kept', 'let', 'begin', 'began', 'begun', 'help', 'show', 'showed', 'shown', 'hear', 'heard',
+            'play', 'run', 'ran', 'move', 'live', 'believe', 'bring', 'brought', 'happen', 'write', 'wrote', 'written', 'sit', 'sat', 'stand', 'stood', 'lose', 'lost',
+            'pay', 'paid', 'meet', 'met', 'include', 'continue', 'set', 'learn', 'learned', 'learnt', 'change', 'lead', 'led', 'understand', 'understood', 'watch', 'follow',
+            'stop', 'stopped', 'create', 'speak', 'spoke', 'spoken', 'read', 'allow', 'add', 'spend', 'spent', 'grow', 'grew', 'grown', 'open', 'walk', 'win', 'won',
+            'offer', 'remember', 'love', 'consider', 'appear', 'buy', 'bought', 'wait', 'serve', 'die', 'died', 'send', 'sent', 'expect', 'build', 'built', 'stay',
+            'fall', 'fell', 'fallen', 'cut', 'reach', 'kill', 'remain', 'suggest', 'raise', 'pass', 'sell', 'sold', 'require', 'report', 'decide', 'pull',
+            // 常見名詞
+            'time', 'person', 'year', 'way', 'day', 'thing', 'man', 'world', 'life', 'hand', 'part', 'child', 'eye', 'woman', 'place', 'work', 'week', 'case', 'point',
+            'government', 'company', 'number', 'group', 'problem', 'fact', 'water', 'money', 'story', 'month', 'book', 'home', 'school', 'house', 'car', 'job', 'word',
+            'business', 'issue', 'side', 'kind', 'head', 'house', 'service', 'friend', 'father', 'power', 'hour', 'game', 'line', 'end', 'member', 'law', 'country',
+            'family', 'student', 'idea', 'body', 'information', 'back', 'parent', 'face', 'others', 'level', 'office', 'door', 'health', 'person', 'art', 'war',
+            'history', 'party', 'result', 'change', 'morning', 'reason', 'research', 'girl', 'guy', 'moment', 'air', 'teacher', 'force', 'education',
+            // 常見形容詞
+            'good', 'better', 'best', 'new', 'first', 'last', 'long', 'great', 'little', 'own', 'other', 'old', 'right', 'big', 'high', 'different', 'small',
+            'large', 'next', 'early', 'young', 'important', 'few', 'public', 'bad', 'worse', 'worst', 'same', 'able', 'white', 'black', 'red', 'blue', 'green',
+            'easy', 'hard', 'free', 'full', 'true', 'false', 'happy', 'sad', 'nice', 'beautiful', 'strong', 'weak', 'hot', 'cold', 'warm', 'cool', 'fast', 'slow'
+        ]);
+
+        // 檢查是否為有效英文單字
+        function isValidWord(word) {
+            const lowerWord = word.toLowerCase();
+            // 基本詞典檢查
+            if (basicDictionary.has(lowerWord)) return true;
+            
+            // 長度檢查：過短或過長的可能不是有效單字
+            if (lowerWord.length < 1 || lowerWord.length > 20) return false;
+            
+            // 基本字母檢查
+            if (!/^[a-z]+$/.test(lowerWord)) return false;
+            
+            // 使用 compromise.js 進行詞性檢測
+            try {
+                const doc = nlp(lowerWord);
+                const tags = doc.out('tags');
+                // 如果有詞性標籤，認為是有效單字
+                return tags && tags.length > 0 && tags[0] && Object.keys(tags[0]).length > 0;
+            } catch (e) {
+                // 如果 compromise.js 出錯，使用基本驗證
+                return lowerWord.length >= 2;
+            }
+        }
+
+        // 檢測單字詞性
+        function getPartOfSpeech(word) {
+            try {
+                const doc = nlp(word);
+                const terms = doc.terms().out('array');
+                if (terms.length === 0) return 'unknown';
+                
+                const term = doc.terms().get(0);
+                if (term.has('#Verb')) return 'verb';
+                if (term.has('#Noun')) return 'noun';
+                if (term.has('#Adjective')) return 'adjective';
+                if (term.has('#Adverb')) return 'adverb';
+                if (term.has('#Preposition')) return 'preposition';
+                if (term.has('#Pronoun')) return 'pronoun';
+                if (term.has('#Determiner')) return 'determiner';
+                
+                return 'unknown';
+            } catch (e) {
+                return 'unknown';
+            }
+        }
+
+        // 生成單字的所有可能變化形式（智能改善版）
         function generateWordVariations(word) {
             const variations = new Set([word.toLowerCase()]);
+            const lowerWord = word.toLowerCase();
+            
+            // 🔍 第一層驗證：檢查是否為有效英文單字
+            if (!isValidWord(lowerWord)) {
+                console.log(`⚠️  "${word}" 可能不是有效的英文單字，僅返回原始形式`);
+                return [lowerWord];
+            }
+
+            // 🎯 第二層改善：詞性檢測
+            const partOfSpeech = getPartOfSpeech(lowerWord);
+            const isShortWord = lowerWord.length < 3;
+            
+            console.log(`🔍 分析單字 "${word}": 詞性=${partOfSpeech}, 長度=${lowerWord.length}, 短單字=${isShortWord}`);
             
             // 檢查不規則動詞
-            const lowerWord = word.toLowerCase();
             if (irregularVerbs[lowerWord]) {
                 irregularVerbs[lowerWord].forEach(variant => variations.add(variant));
             }
@@ -2046,74 +2144,134 @@
                 }
             }
 
-            // 應用形態學規則
+            // 應用形態學規則（智能化處理）
             Object.values(morphologyRules).forEach(ruleSet => {
                 ruleSet.forEach(rule => {
                     if (rule.pattern.test(lowerWord)) {
+                        // 🚫 短單字跳過縮短規則
+                        if (isShortWord && isShortening(rule, lowerWord)) {
+                            return; // 跳過這個規則
+                        }
+                        
                         const stem = lowerWord.replace(rule.pattern, rule.replacement);
                         variations.add(stem);
                         
                         // 從詞幹生成其他形式
-                        generateFormsFromStem(stem).forEach(form => variations.add(form));
+                        generateFormsFromStem(stem, isShortWord, partOfSpeech).forEach(form => variations.add(form));
                     }
                 });
             });
 
             // 從原始單字生成其他形式
-            generateFormsFromStem(lowerWord).forEach(form => variations.add(form));
+            generateFormsFromStem(lowerWord, isShortWord, partOfSpeech).forEach(form => variations.add(form));
 
-            return Array.from(variations);
+            // 🗂️ 第三層驗證：過濾無效的變化形式
+            const validVariations = Array.from(variations).filter(variant => {
+                // 保留原始單字
+                if (variant === lowerWord) return true;
+                // 檢查不規則動詞
+                if (Object.keys(irregularVerbs).includes(variant)) return true;
+                if (Object.values(irregularVerbs).some(variants => variants.includes(variant))) return true;
+                // 檢查其他變化是否為有效單字
+                return isValidWord(variant);
+            });
+
+            console.log(`✅ "${word}" 生成 ${validVariations.length} 個有效變化:`, validVariations);
+            return validVariations;
         }
 
-        // 從詞幹生成各種變化形式
-        function generateFormsFromStem(stem) {
+        // 從詞幹生成各種變化形式（智能改善版，基於詞性的精確生成）
+        function generateFormsFromStem(stem, isShortWord = false, partOfSpeech = 'unknown') {
             const forms = new Set([stem]);
             
-            // 生成複數形式
-            forms.add(stem + 's');
-            forms.add(stem + 'es');
-            if (stem.endsWith('y')) {
-                forms.add(stem.slice(0, -1) + 'ies');
-            }
-            if (stem.endsWith('f')) {
-                forms.add(stem.slice(0, -1) + 'ves');
-            }
-            if (stem.endsWith('fe')) {
-                forms.add(stem.slice(0, -2) + 'ves');
-            }
-
-            // 生成動詞形式
-            forms.add(stem + 'ed');
-            forms.add(stem + 'ing');
-            if (stem.endsWith('e')) {
-                forms.add(stem + 'd');
-                forms.add(stem.slice(0, -1) + 'ing');
-            }
-            if (stem.endsWith('y')) {
-                forms.add(stem.slice(0, -1) + 'ied');
-                forms.add(stem.slice(0, -1) + 'ying');
-            }
-            
-            // 雙寫輔音字母的規則
-            if (stem.length >= 3 && /[bcdfghjklmnpqrstvwxyz]$/.test(stem) && 
-                /[aeiou][bcdfghjklmnpqrstvwxyz]$/.test(stem)) {
-                const doubled = stem + stem.slice(-1);
-                forms.add(doubled + 'ed');
-                forms.add(doubled + 'ing');
-            }
-
-            // 生成形容詞比較級和最高級
-            forms.add(stem + 'er');
-            forms.add(stem + 'est');
-            if (stem.endsWith('y')) {
-                forms.add(stem.slice(0, -1) + 'ier');
-                forms.add(stem.slice(0, -1) + 'iest');
-            }
-
-            // 生成副詞
-            forms.add(stem + 'ly');
-            if (stem.endsWith('y')) {
-                forms.add(stem.slice(0, -1) + 'ily');
+            // 🎯 基於詞性的智能變化生成
+            switch (partOfSpeech) {
+                case 'noun':
+                    // 名詞：主要生成複數形式
+                    forms.add(stem + 's');
+                    forms.add(stem + 'es');
+                    if (stem.endsWith('y') && !isShortWord) {
+                        forms.add(stem.slice(0, -1) + 'ies');
+                    }
+                    if (stem.endsWith('f') && !isShortWord) {
+                        forms.add(stem.slice(0, -1) + 'ves');
+                    }
+                    if (stem.endsWith('fe') && !isShortWord) {
+                        forms.add(stem.slice(0, -2) + 'ves');
+                    }
+                    break;
+                    
+                case 'verb':
+                    // 動詞：生成時態變化
+                    forms.add(stem + 'ed');
+                    forms.add(stem + 'ing');
+                    forms.add(stem + 's'); // 第三人稱單數
+                    
+                    if (stem.endsWith('e')) {
+                        forms.add(stem + 'd');
+                        if (!isShortWord) {
+                            forms.add(stem.slice(0, -1) + 'ing');
+                        }
+                    }
+                    if (stem.endsWith('y') && !isShortWord) {
+                        forms.add(stem.slice(0, -1) + 'ied');
+                        forms.add(stem.slice(0, -1) + 'ying');
+                    }
+                    
+                    // 雙寫輔音字母的規則
+                    if (stem.length >= 3 && /[bcdfghjklmnpqrstvwxyz]$/.test(stem) && 
+                        /[aeiou][bcdfghjklmnpqrstvwxyz]$/.test(stem)) {
+                        const doubled = stem + stem.slice(-1);
+                        forms.add(doubled + 'ed');
+                        forms.add(doubled + 'ing');
+                    }
+                    break;
+                    
+                case 'adjective':
+                    // 形容詞：生成比較級和最高級
+                    forms.add(stem + 'er');
+                    forms.add(stem + 'est');
+                    forms.add(stem + 'ly'); // 副詞形式
+                    
+                    if (stem.endsWith('y') && !isShortWord) {
+                        forms.add(stem.slice(0, -1) + 'ier');
+                        forms.add(stem.slice(0, -1) + 'iest');
+                        forms.add(stem.slice(0, -1) + 'ily');
+                    }
+                    break;
+                    
+                case 'adverb':
+                    // 副詞：通常變化較少
+                    if (stem.endsWith('ly')) {
+                        // 如果已經是副詞形式，嘗試還原形容詞
+                        const adjBase = stem.slice(0, -2);
+                        if (adjBase.length > 2) {
+                            forms.add(adjBase);
+                        }
+                    }
+                    break;
+                    
+                default:
+                    // 未知詞性：生成所有可能的變化，但更保守
+                    if (!isShortWord) {
+                        // 只對非短單字進行全面變化
+                        forms.add(stem + 's');
+                        forms.add(stem + 'ed');
+                        forms.add(stem + 'ing');
+                        forms.add(stem + 'er');
+                        forms.add(stem + 'est');
+                        forms.add(stem + 'ly');
+                        
+                        if (stem.endsWith('y')) {
+                            forms.add(stem.slice(0, -1) + 'ies');
+                            forms.add(stem.slice(0, -1) + 'ied');
+                        }
+                    } else {
+                        // 短單字只添加基本擴展
+                        forms.add(stem + 's');
+                        forms.add(stem + 'ed');
+                        forms.add(stem + 'ing');
+                    }
             }
 
             return Array.from(forms);
