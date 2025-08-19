@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>詞彙句子查找器 - 學測英文試題資料庫</title>
+    <title>vocabGem - 學測英文詞彙例句寶庫</title>
     
     <!-- Google Material Design 3 (Material You) -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -13,6 +13,10 @@
     
     <!-- SheetJS library for Excel file generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <!-- docx library for Word file generation -->
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
     <style>
         /* Jutor.ai 真實配色方案 v2 - 更簡潔的詮釋 */
         :root {
@@ -299,6 +303,84 @@
             font-size: var(--md-sys-typescale-body-medium-size);
             line-height: var(--md-sys-typescale-body-medium-line-height);
             display: none;
+        }
+
+
+
+        /* 響應式篩選器容器 */
+        .filter-container {
+            margin-top: var(--md-sys-spacing-md);
+        }
+
+        /* 篩選器內容區域 */
+        .filter-content {
+            padding: var(--md-sys-spacing-lg);
+            background: var(--md-sys-color-surface-container-lowest);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+            box-shadow: var(--md-sys-elevation-level1);
+        }
+
+        .filter-drawer-toggle {
+            display: flex;
+            align-items: center;
+            gap: var(--md-sys-spacing-sm);
+            padding: var(--md-sys-spacing-md) var(--md-sys-spacing-lg);
+            background: var(--md-sys-color-surface-container-low);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-medium);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+            user-select: none;
+            font-size: var(--md-sys-typescale-body-large-size);
+            color: var(--md-sys-color-on-surface);
+            justify-content: center;
+        }
+
+        /* 桌面版樣式：直接顯示內容，隱藏切換按鈕 */
+        @media (min-width: 600px) {
+            .filter-drawer-toggle {
+                display: none !important;
+            }
+            
+            .filter-content {
+                display: block !important;
+                margin-top: 0 !important;
+            }
+            
+            /* 桌面版篩選器容器直接顯示內容，不需要抽屜外觀 */
+            .filter-container {
+                margin-top: var(--md-sys-spacing-md);
+            }
+        }
+
+        .filter-drawer-toggle:hover {
+            background: var(--md-sys-color-surface-container);
+            border-color: var(--md-sys-color-on-surface);
+        }
+
+        .filter-drawer-toggle .material-symbols-outlined:first-child {
+            font-size: 20px;
+            color: var(--md-sys-color-primary);
+        }
+
+        .filter-arrow {
+            transition: transform 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+            font-size: 18px !important;
+            color: var(--md-sys-color-on-surface-variant) !important;
+        }
+
+        .filter-drawer-toggle[aria-expanded="true"] .filter-arrow {
+            transform: rotate(180deg);
+        }
+
+        .filter-drawer-content {
+            margin-top: var(--md-sys-spacing-sm);
+            padding: var(--md-sys-spacing-lg);
+            background: var(--md-sys-color-surface-container-lowest);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+            box-shadow: var(--md-sys-elevation-level1);
         }
 
         /* 複選篩選器樣式 */
@@ -958,6 +1040,16 @@
                 padding: var(--md-sys-spacing-sm);
             }
 
+            /* 手機版隱藏搜尋狀態說明 */
+            .search-mode-indicator {
+                display: none !important;
+            }
+
+            /* 手機版篩選器內容預設隱藏 */
+            .filter-content {
+                display: none;
+            }
+
             .header {
                 padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-md);
             }
@@ -996,6 +1088,11 @@
                 gap: var(--md-sys-spacing-sm);
             }
 
+            .filter-drawer-content .filter-section {
+                flex-direction: column;
+                gap: var(--md-sys-spacing-lg);
+            }
+
             .multiselect-container {
                 min-width: auto;
                 width: 100%;
@@ -1011,6 +1108,14 @@
                 display: block;
                 overflow-x: auto;
                 white-space: nowrap;
+            }
+
+            /* 手機版隱藏部分欄位 */
+            .results-table th:nth-child(3), /* 來源 */
+            .results-table td:nth-child(3),
+            .results-table th:nth-child(5), /* 例句翻譯 */
+            .results-table td:nth-child(5) {
+                display: none;
             }
             
             .results-table th,
@@ -1069,6 +1174,8 @@
                 min-width: 140px;
             }
 
+
+
             .download-menu {
                 position: fixed;
                 top: auto;
@@ -1097,6 +1204,7 @@
         }
 
         /* Desktop enhancements */
+
         @media (min-width: 1024px) {
             .sentence-cell,
             .translation-cell {
@@ -1120,8 +1228,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>詞彙句子查找器</h1>
-            <p>歷屆學測英文試題句子資料庫</p>
+            <h1>vocabGem <span style="font-size: 0.7em; color: var(--md-sys-color-on-surface-variant);">詞彙寶石</span></h1>
+            <p>挖掘學測英文考題中的詞彙寶藏 - 每個例句都是珍貴的學習資源</p>
             
             <div class="status-section">
                 <div class="status-text" id="statusText">準備載入資料...</div>
@@ -1138,36 +1246,50 @@
         <div class="controls">
             <div class="search-section">
                 <div class="search-box">
-                    <input type="text" id="wordSearchInput" class="search-input word-search-input" placeholder="輸入任何單字（會自動尋找所有變化形式）" disabled>
+                    <input type="text" id="wordSearchInput" class="search-input word-search-input" placeholder="輸入單字，在 vocabGem 中挖掘珍貴的例句寶石 💎" disabled>
                 </div>
             </div>
 
-            <div class="filter-section" style="display: none;">
-                <div class="filter-group">
-                    <label class="filter-label">年份：</label>
-                    <div class="multiselect-container" id="yearFilterContainer">
-                        <div class="multiselect-toggle" id="yearFilterToggle" disabled>
-                            <span>選擇年份</span>
-                            <span class="multiselect-arrow material-symbols-outlined">expand_more</span>
-                        </div>
-                        <div class="multiselect-dropdown" id="yearFilterDropdown">
-                        </div>
-                    </div>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">題型：</label>
-                    <div class="multiselect-container" id="partFilterContainer">
-                        <div class="multiselect-toggle" id="partFilterToggle" disabled>
-                            <span>選擇題型</span>
-                            <span class="multiselect-arrow material-symbols-outlined">expand_more</span>
-                        </div>
-                        <div class="multiselect-dropdown" id="partFilterDropdown">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            <!-- 搜尋狀態指示器移到搜尋框下方 -->
             <div class="search-mode-indicator" id="searchModeIndicator"></div>
+
+            <!-- 響應式篩選器容器 -->
+            <div class="filter-container" id="filterContainer" style="display: none;">
+                <!-- 手機版抽屜切換按鈕 -->
+                <div class="filter-drawer-toggle" id="filterDrawerToggle">
+                    <span class="material-symbols-outlined">tune</span>
+                    <span>進階篩選</span>
+                    <span class="material-symbols-outlined filter-arrow">expand_more</span>
+                </div>
+                
+                <!-- 篩選器內容區域 -->
+                <div class="filter-content" id="filterContent">
+                    <div class="filter-section">
+                        <div class="filter-group">
+                            <label class="filter-label">年份：</label>
+                            <div class="multiselect-container" id="yearFilterContainer">
+                                <div class="multiselect-toggle" id="yearFilterToggle" disabled>
+                                    <span>選擇年份</span>
+                                    <span class="multiselect-arrow material-symbols-outlined">expand_more</span>
+                                </div>
+                                <div class="multiselect-dropdown" id="yearFilterDropdown">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">題型：</label>
+                            <div class="multiselect-container" id="partFilterContainer">
+                                <div class="multiselect-toggle" id="partFilterToggle" disabled>
+                                    <span>選擇題型</span>
+                                    <span class="multiselect-arrow material-symbols-outlined">expand_more</span>
+                                </div>
+                                <div class="multiselect-dropdown" id="partFilterDropdown">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="loading" id="loading">
                 <div class="spinner"></div>
@@ -1197,6 +1319,10 @@
                                     <span class="material-symbols-outlined">table_chart</span>
                                     Excel (.xlsx)
                                 </button>
+                                <button onclick="downloadData('word')" class="download-option">
+                                    <span class="material-symbols-outlined">description</span>
+                                    Word (.docx)
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1214,8 +1340,8 @@
                             <th>年份</th>
                             <th>題型</th>
                             <th>來源</th>
-                            <th>英文句子</th>
-                            <th>中文翻譯</th>
+                            <th>例句 (English)</th>
+                            <th>例句翻譯 (中文)</th>
                         </tr>
                     </thead>
                     <tbody id="resultsBody">
@@ -1267,11 +1393,17 @@
         const cacheStatus = document.getElementById('cacheStatus');
         const cacheIndicator = document.getElementById('cacheIndicator');
         const refreshButton = document.getElementById('refreshButton');
+        
+        // 篩選器元素
+        const filterContainer = document.getElementById('filterContainer');
+        const filterDrawerToggle = document.getElementById('filterDrawerToggle');
+        const filterContent = document.getElementById('filterContent');
 
         // 全域狀態
         let isDataLoaded = false;
         let selectedYears = new Set();
         let selectedParts = new Set();
+        let isUpdatingFilters = false; // 防止無限循環的標誌
  
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -1286,6 +1418,9 @@
             yearFilterToggle.addEventListener('click', () => toggleMultiselect('year'));
             partFilterToggle.addEventListener('click', () => toggleMultiselect('part'));
             
+            // 篩選器抽屜事件
+            filterDrawerToggle.addEventListener('click', () => toggleFilterDrawer());
+            
             // 下載功能
             downloadButton.addEventListener('click', () => toggleDownloadMenu());
             
@@ -1299,6 +1434,7 @@
             
             // 點擊外部關閉下拉選單
             document.addEventListener('click', (e) => {
+                // 篩選器下拉選單
                 if (!yearFilterToggle.contains(e.target) && !yearFilterDropdown.contains(e.target)) {
                     yearFilterDropdown.style.display = 'none';
                     yearFilterToggle.setAttribute('aria-expanded', false);
@@ -1307,6 +1443,8 @@
                     partFilterDropdown.style.display = 'none';
                     partFilterToggle.setAttribute('aria-expanded', false);
                 }
+                
+                // 下載選單
                 if (!downloadButton.contains(e.target) && !downloadMenu.contains(e.target)) {
                     downloadMenu.style.display = 'none';
                 }
@@ -1314,7 +1452,20 @@
 
             // 監聽滾動事件來處理 sticky 控制區域的視覺效果
             setupStickyControls();
-
+            
+            // 監聽視窗大小變化，確保篩選器顯示正確
+            window.addEventListener('resize', () => {
+                if (filterContainer.style.display === 'block') {
+                    if (window.innerWidth >= 600) {
+                        // 桌面版：確保內容顯示
+                        filterContent.style.display = 'block';
+                    } else {
+                        // 手機版：恢復抽屜狀態（如果之前是展開的話保持展開）
+                        // CSS 會自動處理隱藏
+                    }
+                }
+            });
+            
             // 載入資料
             loadData();
         }
@@ -1521,6 +1672,18 @@
             wordSearchInput.disabled = false;
         }
 
+        // 切換篩選器抽屜（只在手機版有效）
+        function toggleFilterDrawer() {
+            // 只在手機版（小於 600px）才執行抽屜切換
+            if (window.innerWidth >= 600) {
+                return; // 桌面版不執行抽屜功能
+            }
+            
+            const isOpen = filterContent.style.display === 'block';
+            filterContent.style.display = isOpen ? 'none' : 'block';
+            filterDrawerToggle.setAttribute('aria-expanded', !isOpen);
+        }
+
         // 切換複選下拉選單
         function toggleMultiselect(type) {
             if (!isDataLoaded) return;
@@ -1550,6 +1713,11 @@
                 // 更新年份篩選器的顯示文字
                 const totalYears = yearFilterDropdown.querySelectorAll('input[type="checkbox"]').length;
                 updateFilterToggleText('year', totalYears);
+                
+                // 當年份篩選器改變時，動態更新題型篩選器的可用選項（避免無限循環）
+                if (!isUpdatingFilters) {
+                    updateDependentFilter('part');
+                }
             } else if (type === 'part') {
                 selectedParts.clear();
                 const checkboxes = partFilterDropdown.querySelectorAll('input[type="checkbox"]:checked');
@@ -1558,12 +1726,19 @@
                 // 更新題型篩選器的顯示文字
                 const totalParts = partFilterDropdown.querySelectorAll('input[type="checkbox"]').length;
                 updateFilterToggleText('part', totalParts);
+                
+                // 當題型篩選器改變時，動態更新年份篩選器的可用選項（避免無限循環）
+                if (!isUpdatingFilters) {
+                    updateDependentFilter('year');
+                }
             }
             
             // 重新執行篩選
             applyFilters();
         }
         
+
+
         // 更新篩選器按鈕的顯示文字
         function updateFilterToggleText(type, total) {
             if (type === 'year') {
@@ -1611,73 +1786,143 @@
             }
         }
 
+        // 計算在當前篩選條件下可用的選項
+        function getAvailableOptions(type, baseData = wordSearchResults) {
+            if (baseData.length === 0) return [];
+            
+            let filteredData = baseData;
+            
+            // 根據另一個篩選器的選擇來過濾資料
+            if (type === 'year') {
+                // 計算年份選項時，考慮已選擇的題型
+                if (selectedParts.size > 0) {
+                    filteredData = baseData.filter(item => {
+                        const itemPart = String(item.part);
+                        return selectedParts.has(itemPart);
+                    });
+                }
+                return Array.from(new Set(filteredData.map(item => item.year))).sort();
+            } else if (type === 'part') {
+                // 計算題型選項時，考慮已選擇的年份
+                if (selectedYears.size > 0) {
+                    filteredData = baseData.filter(item => {
+                        const itemYear = String(item.year);
+                        return selectedYears.has(itemYear);
+                    });
+                }
+                return Array.from(new Set(filteredData.map(item => item.part))).sort();
+            }
+            
+            return [];
+        }
+        
+        // 更新依賴的篩選器（雙向動態更新的核心功能）
+        function updateDependentFilter(type) {
+            if (!isDataLoaded || wordSearchResults.length === 0) return;
+            
+            const availableOptions = getAvailableOptions(type);
+            
+            if (type === 'year') {
+                updateFilterDropdown('year', availableOptions, selectedYears);
+            } else if (type === 'part') {
+                updateFilterDropdown('part', availableOptions, selectedParts);
+            }
+        }
+        
+        // 更新篩選器下拉選單
+        function updateFilterDropdown(type, availableOptions, selectedSet) {
+            let dropdown, toggleElement;
+            
+            if (type === 'year') {
+                dropdown = yearFilterDropdown;
+                toggleElement = yearFilterToggle;
+            } else if (type === 'part') {
+                dropdown = partFilterDropdown;
+                toggleElement = partFilterToggle;
+            } else {
+                return;
+            }
+            
+            // 設定更新標誌，防止無限循環
+            isUpdatingFilters = true;
+            
+            try {
+                // 儲存當前的選擇狀態
+                const currentSelections = new Set(selectedSet);
+                
+                // 清空並重建下拉選單
+                dropdown.innerHTML = '';
+                
+                availableOptions.forEach(option => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'multiselect-option';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = option;
+                    checkbox.checked = currentSelections.has(option);
+                    
+                    if (type === 'year') {
+                        checkbox.id = `year-${option}`;
+                        checkbox.addEventListener('change', () => updateMultiselect('year'));
+                    } else if (type === 'part') {
+                        const partId = option.replace(/\s+/g, '-');
+                        checkbox.id = `part-${partId}`;
+                        checkbox.addEventListener('change', () => updateMultiselect('part'));
+                    }
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = checkbox.id;
+                    label.textContent = option;
+                    
+                    optionDiv.appendChild(checkbox);
+                    optionDiv.appendChild(label);
+                    dropdown.appendChild(optionDiv);
+                });
+                
+                // 更新按鈕顯示文字
+                updateFilterToggleText(type, availableOptions.length);
+                
+                // 檢查是否有選項被移除（因為與其他篩選器不相容）
+                const removedSelections = [...currentSelections].filter(selection => 
+                    !availableOptions.includes(selection)
+                );
+                
+                if (removedSelections.length > 0) {
+                    // 移除不相容的選項
+                    removedSelections.forEach(selection => selectedSet.delete(selection));
+                    console.log(`已移除不相容的${type === 'year' ? '年份' : '題型'}選項: ${removedSelections.join(', ')}`);
+                }
+            } finally {
+                // 確保標誌被重置
+                isUpdatingFilters = false;
+            }
+        }
+
         function updateFilters(data) {
             if (data.length === 0) {
-                filterSection.style.display = 'none';
+                filterContainer.style.display = 'none';
                 yearFilterToggle.setAttribute('disabled', true);
                 partFilterToggle.setAttribute('disabled', true);
                 return;
             }
 
-            filterSection.style.display = 'flex';
+            filterContainer.style.display = 'block';
             yearFilterToggle.removeAttribute('disabled');
             partFilterToggle.removeAttribute('disabled');
+            
+            // 確保桌面版的篩選器內容顯示正確
+            if (window.innerWidth >= 600) {
+                filterContent.style.display = 'block';
+            }
 
-            const availableYears = Array.from(new Set(data.map(item => item.year))).sort();
-            const availableParts = Array.from(new Set(data.map(item => item.part))).sort();
+            // 初始化時，所有選項都可用
+            const availableYears = getAvailableOptions('year', data);
+            const availableParts = getAvailableOptions('part', data);
 
-            // 更新年份篩選器
-            yearFilterDropdown.innerHTML = '';
-            availableYears.forEach(year => {
-                const option = document.createElement('div');
-                option.className = 'multiselect-option';
-                // 由於已重置篩選器狀態，所有選項都應該是未勾選狀態
-                const isChecked = selectedYears.has(year);
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = `year-${year}`;
-                checkbox.value = year;
-                checkbox.checked = isChecked;
-                checkbox.addEventListener('change', () => updateMultiselect('year'));
-                
-                const label = document.createElement('label');
-                label.htmlFor = `year-${year}`;
-                label.textContent = year;
-                
-                option.appendChild(checkbox);
-                option.appendChild(label);
-                yearFilterDropdown.appendChild(option);
-            });
-
-            updateFilterToggleText('year', availableYears.length);
-
-            // 更新題型篩選器
-            partFilterDropdown.innerHTML = '';
-            availableParts.forEach(part => {
-                const option = document.createElement('div');
-                option.className = 'multiselect-option';
-                // 由於已重置篩選器狀態，所有選項都應該是未勾選狀態
-                const isChecked = selectedParts.has(part);
-                const partId = part.replace(/\s+/g, '-');
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = `part-${partId}`;
-                checkbox.value = part;
-                checkbox.checked = isChecked;
-                checkbox.addEventListener('change', () => updateMultiselect('part'));
-                
-                const label = document.createElement('label');
-                label.htmlFor = `part-${partId}`;
-                label.textContent = part;
-                
-                option.appendChild(checkbox);
-                option.appendChild(label);
-                partFilterDropdown.appendChild(option);
-            });
-
-            updateFilterToggleText('part', availableParts.length);
+            // 更新兩個篩選器
+            updateFilterDropdown('year', availableYears, selectedYears);
+            updateFilterDropdown('part', availableParts, selectedParts);
         }
  
         // 詞形變化規則和詞幹提取功能
@@ -1893,7 +2138,7 @@
                 resultsTable.style.display = 'none';
                 resultsInfo.style.display = 'none';
                 noResults.style.display = 'none';
-                filterSection.style.display = 'none';
+                filterContainer.style.display = 'none';
                 wordSearchResults = [];
                 filteredData = [];
                 resetFilters(); // 清空搜尋時也重置篩選器
@@ -1905,7 +2150,7 @@
             
             const variations = generateWordVariations(wordTerm);
             searchModeIndicator.style.display = 'block';
-            searchModeIndicator.textContent = `正在搜尋「${wordTerm}」的所有變化形式 (${variations.length} 種變化)`;
+            searchModeIndicator.textContent = `正在 vocabGem 中搜尋「${wordTerm}」💎 涵蓋 ${variations.length} 種詞形變化，為您挖掘珍貴的學習寶石`;
 
             wordSearchResults = allData.filter(item => {
                 const sentence = item.sentence.toLowerCase();
@@ -1974,7 +2219,7 @@
 
             downloadMenu.style.display = 'none';
 
-            const headers = ['年份', '題型', '來源', '英文句子', '中文翻譯'];
+            const headers = ['年份', '題型', '來源', '例句 (English)', '例句翻譯 (中文)'];
             const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
             
             if (format === 'markdown') {
@@ -1983,6 +2228,8 @@
                 downloadTSV(headers, filteredData, timestamp);
             } else if (format === 'excel') {
                 downloadExcel(headers, filteredData, timestamp);
+            } else if (format === 'word') {
+                downloadWord(headers, filteredData, timestamp);
             }
         }
 
@@ -2059,6 +2306,203 @@
             }
         }
 
+        // 下載 Word 格式 (.docx) - 對話式排列格式
+        function downloadWord(headers, data, timestamp) {
+            try {
+                // 檢查 docx 是否已載入
+                if (typeof docx === 'undefined' && typeof window.docx === 'undefined') {
+                    console.error('docx 函式庫未載入');
+                    alert('Word 文件生成功能暫時無法使用，請重新載入頁面後再試');
+                    return;
+                }
+                
+                // 使用正確的 docx 參考
+                const docxLib = window.docx || docx;
+
+                // 建立文件段落陣列
+                const paragraphs = [];
+
+                // 新增標題
+                paragraphs.push(
+                    new docxLib.Paragraph({
+                        children: [
+                            new docxLib.TextRun({
+                                text: "vocabGem 詞彙寶石挖掘結果",
+                                bold: true,
+                                size: 32, // 16pt
+                            }),
+                        ],
+                        alignment: docxLib.AlignmentType.CENTER,
+                        spacing: {
+                            after: 400,
+                        },
+                    })
+                );
+
+                // 新增生成時間
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('zh-TW', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                paragraphs.push(
+                    new docxLib.Paragraph({
+                        children: [
+                            new docxLib.TextRun({
+                                text: `生成時間：${dateStr}`,
+                                italics: true,
+                                size: 20, // 10pt
+                            }),
+                        ],
+                        alignment: docxLib.AlignmentType.CENTER,
+                        spacing: {
+                            after: 600,
+                        },
+                    })
+                );
+
+                // 新增結果總數
+                paragraphs.push(
+                    new docxLib.Paragraph({
+                        children: [
+                            new docxLib.TextRun({
+                                text: `共找到 ${data.length} 個學測真題例句`,
+                                bold: true,
+                                size: 24, // 12pt
+                            }),
+                        ],
+                        spacing: {
+                            after: 400,
+                        },
+                    })
+                );
+
+                // 新增分隔線
+                paragraphs.push(
+                    new docxLib.Paragraph({
+                        children: [
+                            new docxLib.TextRun({
+                                text: "═══════════════════════════════════════════════════════════════",
+                                size: 20,
+                            }),
+                        ],
+                        spacing: {
+                            after: 400,
+                        },
+                    })
+                );
+
+                // 遍歷每筆資料，使用對話式格式
+                data.forEach((item, index) => {
+                    // 編號和英文句子
+                    paragraphs.push(
+                        new docxLib.Paragraph({
+                            children: [
+                                new docxLib.TextRun({
+                                    text: `${index + 1}. 例句：`,
+                                    bold: true,
+                                    size: 22, // 11pt
+                                }),
+                                new docxLib.TextRun({
+                                    text: item.sentence,
+                                    size: 22,
+                                }),
+                            ],
+                            spacing: {
+                                after: 200,
+                            },
+                        })
+                    );
+
+                    // 中文翻譯
+                    paragraphs.push(
+                        new docxLib.Paragraph({
+                            children: [
+                                new docxLib.TextRun({
+                                    text: "   翻譯：",
+                                    bold: true,
+                                    size: 22,
+                                }),
+                                new docxLib.TextRun({
+                                    text: item.translation,
+                                    size: 22,
+                                }),
+                            ],
+                            spacing: {
+                                after: 200,
+                            },
+                        })
+                    );
+
+                    // 來源資訊
+                    paragraphs.push(
+                        new docxLib.Paragraph({
+                            children: [
+                                new docxLib.TextRun({
+                                    text: `   【${item.year}年 ${item.part} ${item.source}】`,
+                                    italics: true,
+                                    size: 20,
+                                    color: "666666",
+                                }),
+                            ],
+                            spacing: {
+                                after: 400,
+                            },
+                        })
+                    );
+
+                    // 如果不是最後一筆，加入分隔線
+                    if (index < data.length - 1) {
+                        paragraphs.push(
+                            new docxLib.Paragraph({
+                                children: [
+                                    new docxLib.TextRun({
+                                        text: "",
+                                    }),
+                                ],
+                                spacing: {
+                                    after: 200,
+                                },
+                            })
+                        );
+                    }
+                });
+
+                // 建立文件
+                const doc = new docxLib.Document({
+                    sections: [{
+                        properties: {
+                            page: {
+                                margin: {
+                                    top: 1440, // 1 inch
+                                    right: 1440,
+                                    bottom: 1440,
+                                    left: 1440,
+                                },
+                            },
+                        },
+                        children: paragraphs,
+                    }],
+                });
+
+                // 生成並下載檔案
+                const filename = `vocabulary_results_${timestamp}.docx`;
+                docxLib.Packer.toBlob(doc).then(blob => {
+                    saveAs(blob, filename);
+                }).catch(error => {
+                    console.error('生成 Word 檔案時發生錯誤:', error);
+                    alert('生成 Word 檔案時發生錯誤，請稍後再試');
+                });
+
+            } catch (error) {
+                console.error('生成 Word 檔案時發生錯誤:', error);
+                alert('生成 Word 檔案時發生錯誤，請稍後再試');
+            }
+        }
+
         // 通用下載文件函數
         function downloadFile(content, filename, mimeType) {
             const blob = new Blob([content], { type: mimeType });
@@ -2084,7 +2528,7 @@
             noResults.style.display = 'none';
             resultsTable.style.display = 'table';
             resultsInfo.style.display = 'block';
-            resultsCount.textContent = `找到 ${data.length} 筆結果`;
+            resultsCount.textContent = `找到 ${data.length} 個學測真題例句`;
 
             // 清空表格
             resultsBody.innerHTML = '';
@@ -2128,7 +2572,7 @@
                 const copyButton = document.createElement('button');
                 copyButton.classList.add('copy-sentence-btn');
                 copyButton.innerHTML = '<span class="material-symbols-outlined">content_copy</span>';
-                copyButton.title = '複製句子';
+                copyButton.title = '複製例句';
                 copyButton.addEventListener('click', () => copySentence(item.sentence, copyButton));
                 
                 sentenceContent.appendChild(sentenceText);
@@ -2170,7 +2614,7 @@
             noResults.style.display = 'none';
             resultsTable.style.display = 'table';
             resultsInfo.style.display = 'block';
-            resultsCount.textContent = `找到 ${data.length} 筆結果`;
+            resultsCount.textContent = `找到 ${data.length} 個學測真題例句`;
 
             // 清空表格
             resultsBody.innerHTML = '';
@@ -2214,7 +2658,7 @@
                 const copyButton = document.createElement('button');
                 copyButton.classList.add('copy-sentence-btn');
                 copyButton.innerHTML = '<span class="material-symbols-outlined">content_copy</span>';
-                copyButton.title = '複製句子';
+                copyButton.title = '複製例句';
                 copyButton.addEventListener('click', () => copySentence(item.sentence, copyButton));
                 
                 sentenceContent.appendChild(sentenceText);
