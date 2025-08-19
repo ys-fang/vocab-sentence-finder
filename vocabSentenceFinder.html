@@ -1,0 +1,2259 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>詞彙句子查找器 - 學測英文試題資料庫</title>
+    
+    <!-- Google Material Design 3 (Material You) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    
+    <!-- SheetJS library for Excel file generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        /* Jutor.ai 真實配色方案 v2 - 更簡潔的詮釋 */
+        :root {
+            /* Primary Colors - Jutor 薄荷綠主色調 */
+            --md-sys-color-primary: #5DBEAA;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #F0FAF9;
+            --md-sys-color-on-primary-container: #2D3748;
+
+            /* Secondary Colors - 深灰色系 for text and UI elements */
+            --md-sys-color-secondary: #4A5568;
+            --md-sys-color-on-secondary: #FFFFFF;
+            --md-sys-color-secondary-container: #F1F5F9;
+            --md-sys-color-on-secondary-container: #1A202C;
+
+            /* Tertiary Colors - 輔助藍色系 from screenshot */
+            --md-sys-color-tertiary: #4299E1;
+            --md-sys-color-on-tertiary: #FFFFFF;
+            --md-sys-color-tertiary-container: #EBF8FF;
+            --md-sys-color-on-tertiary-container: #2B6CB0;
+
+            /* Error Colors */
+            --md-sys-color-error: #E53E3E;
+            --md-sys-color-on-error: #FFFFFF;
+            --md-sys-color-error-container: #FFF5F5;
+            --md-sys-color-on-error-container: #9B2C2C;
+
+            /* Surface Colors - Clean & white */
+            --md-sys-color-surface: #FFFFFF;
+            --md-sys-color-on-surface: #2D3748;
+            --md-sys-color-surface-variant: #F7FAFC;
+            --md-sys-color-on-surface-variant: #718096;
+            --md-sys-color-surface-container: #FFFFFF;
+            --md-sys-color-surface-container-low: #F7FAFC;
+            --md-sys-color-surface-container-lowest: #FFFFFF;
+            --md-sys-color-surface-container-high: #F7FAFC;
+            --md-sys-color-surface-container-highest: #EDF2F7;
+
+            /* Outline Colors */
+            --md-sys-color-outline: #E2E8F0;
+            --md-sys-color-outline-variant: #F1F5F9;
+
+            /* Success Colors */
+            --md-sys-color-success: #38A169;
+            --md-sys-color-on-success: #FFFFFF;
+            --md-sys-color-success-container: #F0FFF4;
+            --md-sys-color-on-success-container: #276749;
+
+            /* Warning Colors */
+            --md-sys-color-warning: #D69E2E;
+            --md-sys-color-on-warning: #FFFFFF;
+            --md-sys-color-warning-container: #FFFAF0;
+            --md-sys-color-on-warning-container: #975A16;
+
+            /* Elevations */
+            --md-sys-elevation-level0: 0px 0px 0px 0px rgba(0, 0, 0, 0.00), 0px 0px 0px 0px rgba(0, 0, 0, 0.00);
+            --md-sys-elevation-level1: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+            --md-sys-elevation-level2: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+            --md-sys-elevation-level3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.30);
+            --md-sys-elevation-level4: 0px 6px 10px 4px rgba(0, 0, 0, 0.15), 0px 2px 3px 0px rgba(0, 0, 0, 0.30);
+            --md-sys-elevation-level5: 0px 8px 12px 6px rgba(0, 0, 0, 0.15), 0px 4px 4px 0px rgba(0, 0, 0, 0.30);
+
+            /* Typography Scale */
+            --md-sys-typescale-display-large-size: 57px;
+            --md-sys-typescale-display-large-line-height: 64px;
+            --md-sys-typescale-display-large-weight: 400;
+
+            --md-sys-typescale-headline-large-size: 32px;
+            --md-sys-typescale-headline-large-line-height: 40px;
+            --md-sys-typescale-headline-large-weight: 400;
+
+            --md-sys-typescale-title-large-size: 22px;
+            --md-sys-typescale-title-large-line-height: 28px;
+            --md-sys-typescale-title-large-weight: 400;
+
+            --md-sys-typescale-title-medium-size: 16px;
+            --md-sys-typescale-title-medium-line-height: 24px;
+            --md-sys-typescale-title-medium-weight: 500;
+
+            --md-sys-typescale-body-large-size: 16px;
+            --md-sys-typescale-body-large-line-height: 24px;
+            --md-sys-typescale-body-large-weight: 400;
+
+            --md-sys-typescale-body-medium-size: 14px;
+            --md-sys-typescale-body-medium-line-height: 20px;
+            --md-sys-typescale-body-medium-weight: 400;
+
+            --md-sys-typescale-body-small-size: 12px;
+            --md-sys-typescale-body-small-line-height: 16px;
+            --md-sys-typescale-body-small-weight: 400;
+
+            --md-sys-typescale-label-large-size: 14px;
+            --md-sys-typescale-label-large-line-height: 20px;
+            --md-sys-typescale-label-large-weight: 500;
+
+            /* Spacing System */
+            --md-sys-spacing-xs: 4px;
+            --md-sys-spacing-sm: 8px;
+            --md-sys-spacing-md: 16px;
+            --md-sys-spacing-lg: 24px;
+            --md-sys-spacing-xl: 32px;
+            --md-sys-spacing-xxl: 48px;
+
+            /* Border Radius */
+            --md-sys-shape-corner-none: 0px;
+            --md-sys-shape-corner-extra-small: 4px;
+            --md-sys-shape-corner-small: 8px;
+            --md-sys-shape-corner-medium: 12px;
+            --md-sys-shape-corner-large: 16px;
+            --md-sys-shape-corner-extra-large: 28px;
+            --md-sys-shape-corner-full: 50%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--md-sys-color-surface-container-low);
+            color: var(--md-sys-color-on-surface);
+            min-height: 100vh;
+            padding: var(--md-sys-spacing-md);
+            font-size: var(--md-sys-typescale-body-large-size);
+            line-height: var(--md-sys-typescale-body-large-line-height);
+            font-weight: var(--md-sys-typescale-body-large-weight);
+        }
+
+        /* Material Icons 全域樣式 */
+        .material-icons,
+        .material-icons-outlined,
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined', 'Material Icons Outlined', 'Material Icons';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 20px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+            vertical-align: middle;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--md-sys-color-surface-container-lowest);
+            border-radius: var(--md-sys-shape-corner-extra-large);
+            box-shadow: var(--md-sys-elevation-level2);
+        }
+
+        .header {
+            background: var(--md-sys-color-surface-container-low);
+            color: var(--md-sys-color-on-surface);
+            padding: var(--md-sys-spacing-xxl) var(--md-sys-spacing-xl);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-extra-large) 0 0;
+        }
+
+        .header::before {
+            display: none;
+        }
+
+        .header h1 {
+            font-size: var(--md-sys-typescale-headline-large-size);
+            line-height: var(--md-sys-typescale-headline-large-line-height);
+            font-weight: var(--md-sys-typescale-headline-large-weight);
+            margin-bottom: var(--md-sys-spacing-sm);
+            position: relative;
+            z-index: 1;
+            color: var(--md-sys-color-primary);
+        }
+
+        .header p {
+            font-size: var(--md-sys-typescale-body-large-size);
+            line-height: var(--md-sys-typescale-body-large-line-height);
+            opacity: 0.87;
+            position: relative;
+            z-index: 1;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .controls {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: var(--md-sys-spacing-xl);
+            background: var(--md-sys-color-surface);
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            box-shadow: none;
+            transition: all 0.3s cubic-bezier(0.2, 0.0, 0, 1.0);
+        }
+
+        .controls.scrolled {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom-color: transparent;
+            box-shadow: var(--md-sys-elevation-level2);
+        }
+
+        .search-section {
+            display: flex;
+            gap: var(--md-sys-spacing-md);
+            margin-bottom: var(--md-sys-spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: var(--md-sys-spacing-md) var(--md-sys-spacing-lg);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-extra-large);
+            font-size: var(--md-sys-typescale-body-large-size);
+            line-height: var(--md-sys-typescale-body-large-line-height);
+            font-family: inherit;
+            background: var(--md-sys-color-surface-container-lowest);
+            color: var(--md-sys-color-on-surface);
+            transition: all 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+            box-shadow: var(--md-sys-elevation-level0);
+            min-height: 48px;
+            box-sizing: border-box;
+        }
+
+        .search-input:hover {
+            border-color: var(--md-sys-color-on-surface);
+            box-shadow: var(--md-sys-elevation-level1);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.12);
+            background: var(--md-sys-color-surface);
+        }
+
+        .word-search-input {
+            border-color: var(--md-sys-color-success);
+            background: var(--md-sys-color-success-container);
+            color: var(--md-sys-color-on-success-container);
+        }
+
+        .word-search-input:hover {
+            border-color: var(--md-sys-color-success);
+        }
+
+        .word-search-input:focus {
+            border-color: var(--md-sys-color-success);
+            box-shadow: 0 0 0 2px rgba(56, 161, 105, 0.12);
+        }
+
+        .word-match {
+            background-color: var(--md-sys-color-warning-container);
+            color: var(--md-sys-color-on-warning-container);
+            border-radius: var(--md-sys-shape-corner-extra-small);
+            padding: 2px 6px;
+            font-weight: var(--md-sys-typescale-label-large-weight);
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+        }
+
+        .search-mode-indicator {
+            margin-top: var(--md-sys-spacing-sm);
+            padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-md);
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            border-radius: var(--md-sys-shape-corner-small);
+            font-size: var(--md-sys-typescale-body-medium-size);
+            line-height: var(--md-sys-typescale-body-medium-line-height);
+            display: none;
+        }
+
+        /* 複選篩選器樣式 */
+        .multiselect-container {
+            position: relative;
+            display: inline-block;
+            min-width: 180px;
+        }
+
+        .multiselect-toggle {
+            padding: var(--md-sys-spacing-md) var(--md-sys-spacing-lg);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-medium);
+            background: var(--md-sys-color-surface-container-lowest);
+            color: var(--md-sys-color-on-surface);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            font-size: var(--md-sys-typescale-body-large-size);
+            line-height: var(--md-sys-typescale-body-large-line-height);
+            transition: all 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+            box-shadow: var(--md-sys-elevation-level0);
+            min-height: 48px;
+        }
+
+        .multiselect-toggle[disabled] {
+            background: var(--md-sys-color-surface-variant);
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: not-allowed;
+            opacity: 0.38;
+        }
+
+        .multiselect-toggle:hover:not([disabled]) {
+            border-color: var(--md-sys-color-on-surface);
+            box-shadow: var(--md-sys-elevation-level1);
+        }
+
+        .multiselect-arrow {
+            transition: transform 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 18px;
+        }
+
+        .multiselect-dropdown[style*="block"] + .multiselect-toggle .multiselect-arrow,
+        .multiselect-toggle[aria-expanded="true"] .multiselect-arrow {
+            transform: rotate(180deg);
+        }
+
+        .multiselect-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--md-sys-color-surface-container);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: var(--md-sys-elevation-level2);
+            margin-top: var(--md-sys-spacing-xs);
+        }
+
+        .multiselect-option {
+            padding: var(--md-sys-spacing-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--md-sys-spacing-md);
+            font-size: var(--md-sys-typescale-body-large-size);
+            line-height: var(--md-sys-typescale-body-large-line-height);
+            color: var(--md-sys-color-on-surface);
+            transition: background-color 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+        }
+
+        .multiselect-option:hover {
+            background: var(--md-sys-color-surface-container-high);
+        }
+
+        .multiselect-option:first-child {
+            border-radius: var(--md-sys-shape-corner-medium) var(--md-sys-shape-corner-medium) 0 0;
+        }
+
+        .multiselect-option:last-child {
+            border-radius: 0 0 var(--md-sys-shape-corner-medium) var(--md-sys-shape-corner-medium);
+        }
+
+        .multiselect-option input[type="checkbox"] {
+            margin: 0;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--md-sys-color-primary);
+        }
+
+        /* 結果操作按鈕樣式 */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .results-actions {
+            display: flex;
+            gap: var(--md-sys-spacing-sm);
+            align-items: center;
+        }
+
+        .action-button {
+            padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-lg);
+            border: none;
+            border-radius: var(--md-sys-shape-corner-large);
+            cursor: pointer;
+            font-size: var(--md-sys-typescale-label-large-size);
+            font-weight: var(--md-sys-typescale-label-large-weight);
+            font-family: inherit;
+            transition: all 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+            display: flex;
+            align-items: center;
+            gap: var(--md-sys-spacing-sm);
+            min-height: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+        }
+
+        .action-button:hover::before {
+            opacity: 0.08;
+        }
+
+        .action-button:focus::before {
+            opacity: 0.12;
+        }
+
+        .action-button:active::before {
+            opacity: 0.16;
+        }
+
+        .download-dropdown {
+            position: relative;
+        }
+
+        .download-button {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            box-shadow: none;
+        }
+
+        .download-button:hover {
+            box-shadow: none;
+            filter: brightness(90%);
+        }
+
+        .download-button:active {
+            box-shadow: none;
+            filter: brightness(85%);
+        }
+
+        .download-button .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        .download-menu {
+            position: absolute;
+            top: calc(100% + var(--md-sys-spacing-xs));
+            right: 0;
+            background: var(--md-sys-color-surface-container);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+            box-shadow: var(--md-sys-elevation-level2);
+            z-index: 1000;
+            display: none;
+            min-width: 180px;
+            overflow: hidden;
+        }
+
+        .download-option {
+            display: flex;
+            align-items: center;
+            gap: var(--md-sys-spacing-md);
+            width: 100%;
+            padding: var(--md-sys-spacing-md) var(--md-sys-spacing-lg);
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: var(--md-sys-typescale-body-large-size);
+            line-height: var(--md-sys-typescale-body-large-line-height);
+            color: var(--md-sys-color-on-surface);
+            font-family: inherit;
+            transition: background-color 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-option .material-symbols-outlined {
+            color: var(--md-sys-color-on-surface-variant);
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .download-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+        }
+
+        .download-option:hover::before {
+            opacity: 0.08;
+        }
+
+        .download-option:focus::before {
+            opacity: 0.12;
+        }
+
+        .download-option:active::before {
+            opacity: 0.16;
+        }
+
+        /* 禁用狀態樣式 */
+        input:disabled {
+            background: var(--md-sys-color-surface-variant);
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: not-allowed;
+            opacity: 0.38;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: var(--md-sys-spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: var(--md-sys-spacing-md);
+        }
+
+        .filter-label {
+            font-weight: var(--md-sys-typescale-title-medium-weight);
+            font-size: var(--md-sys-typescale-title-medium-size);
+            line-height: var(--md-sys-typescale-title-medium-line-height);
+            color: var(--md-sys-color-on-surface);
+            white-space: nowrap;
+        }
+
+        .filter-select {
+            padding: var(--md-sys-spacing-md);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-medium);
+            background: var(--md-sys-color-surface-container-lowest);
+            color: var(--md-sys-color-on-surface);
+            font-size: var(--md-sys-typescale-body-large-size);
+            font-family: inherit;
+            min-width: 140px;
+            transition: all 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+        }
+
+        .filter-select:hover {
+            border-color: var(--md-sys-color-on-surface);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.12);
+        }
+
+        .status-section {
+            margin-top: var(--md-sys-spacing-lg);
+            padding: 0;
+            background: transparent;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .status-text {
+            color: var(--md-sys-color-on-primary-container);
+            font-weight: var(--md-sys-typescale-body-medium-weight);
+            font-size: var(--md-sys-typescale-body-small-size);
+            line-height: var(--md-sys-typescale-body-small-line-height);
+            opacity: 0.8;
+            margin-bottom: var(--md-sys-spacing-xs);
+        }
+
+        .cache-status {
+            margin-top: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--md-sys-spacing-md);
+            padding: 0;
+            background: transparent;
+        }
+
+        .cache-indicator {
+            font-size: var(--md-sys-typescale-body-small-size);
+            line-height: var(--md-sys-typescale-body-small-line-height);
+            color: var(--md-sys-color-on-primary-container);
+            opacity: 0.7;
+        }
+
+        .cache-indicator.using-cache {
+            color: var(--md-sys-color-success);
+            opacity: 0.8;
+        }
+
+        .cache-indicator.old-cache {
+            color: var(--md-sys-color-warning);
+            opacity: 0.8;
+        }
+
+        .refresh-button {
+            padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--md-sys-shape-corner-medium);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--md-sys-color-on-primary-container);
+            cursor: pointer;
+            font-size: var(--md-sys-typescale-body-small-size);
+            font-weight: var(--md-sys-typescale-body-small-weight);
+            font-family: inherit;
+            transition: all 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--md-sys-spacing-xs);
+            min-height: 28px;
+            opacity: 0.7;
+        }
+
+        .refresh-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+        }
+
+        .refresh-button:hover {
+            opacity: 1;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .refresh-button:hover::before {
+            opacity: 0.08;
+        }
+
+        .refresh-button:focus::before {
+            opacity: 0.12;
+        }
+
+        .refresh-button:active::before {
+            opacity: 0.16;
+        }
+
+        .refresh-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .refresh-button:disabled::before {
+            display: none;
+        }
+
+        .refresh-button .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: var(--md-sys-spacing-xl);
+        }
+
+        .spinner {
+            border: 4px solid var(--md-sys-color-surface-variant);
+            border-top: 4px solid var(--md-sys-color-primary);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto var(--md-sys-spacing-lg);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .content {
+            padding: var(--md-sys-spacing-xl);
+            margin-top: 0;
+            min-height: calc(100vh - 200px);
+            background: var(--md-sys-color-surface);
+            border-radius: 0 0 var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-extra-large);
+        }
+
+        /* 確保結果區域有足夠的空間，不會被固定控制區域擋住 */
+        .results-container {
+            margin-top: var(--md-sys-spacing-lg);
+        }
+
+        /* 平滑滾動效果 */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .results-info {
+            margin-top: var(--md-sys-spacing-lg);
+            padding: var(--md-sys-spacing-md) var(--md-sys-spacing-lg);
+            background: var(--md-sys-color-success-container);
+            color: var(--md-sys-color-on-success-container);
+            border-radius: var(--md-sys-shape-corner-medium);
+            border-left: 4px solid var(--md-sys-color-success);
+        }
+
+        .results-count {
+            font-weight: var(--md-sys-typescale-title-medium-weight);
+            font-size: var(--md-sys-typescale-title-medium-size);
+            line-height: var(--md-sys-typescale-title-medium-line-height);
+            color: var(--md-sys-color-on-success-container);
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--md-sys-color-surface-container-lowest);
+            border-radius: var(--md-sys-shape-corner-large);
+            overflow: hidden;
+            box-shadow: none;
+            border: 1px solid var(--md-sys-color-outline);
+            table-layout: fixed;
+        }
+
+        .results-table th:nth-child(1), 
+        .results-table td:nth-child(1) {
+            width: 8%;
+            min-width: 60px;
+        }
+
+        .results-table th:nth-child(2), 
+        .results-table td:nth-child(2) {
+            width: 15%;
+            min-width: 120px;
+        }
+
+        .results-table th:nth-child(3), 
+        .results-table td:nth-child(3) {
+            width: 17%;
+            min-width: 140px;
+        }
+
+        .results-table th:nth-child(4), 
+        .results-table td:nth-child(4) {
+            width: 35%;
+        }
+
+        .results-table th:nth-child(5), 
+        .results-table td:nth-child(5) {
+            width: 25%;
+        }
+
+        .results-table th {
+            background: var(--md-sys-color-surface-container-low);
+            color: var(--md-sys-color-on-surface-variant);
+            padding: var(--md-sys-spacing-lg);
+            text-align: left;
+            font-weight: var(--md-sys-typescale-title-medium-weight);
+            font-size: var(--md-sys-typescale-body-medium-size);
+            line-height: var(--md-sys-typescale-title-medium-line-height);
+            border-bottom: 1px solid var(--md-sys-color-outline);
+        }
+
+        .results-table td {
+            padding: var(--md-sys-spacing-lg);
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            vertical-align: top;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .results-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .results-table tr:hover {
+            background: var(--md-sys-color-primary-container);
+        }
+
+        .sentence-cell {
+            max-width: 500px;
+            line-height: var(--md-sys-typescale-body-large-line-height);
+            position: relative;
+        }
+
+        .sentence-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--md-sys-spacing-md);
+        }
+
+        .sentence-text {
+            flex: 1;
+            font-size: var(--md-sys-typescale-body-large-size);
+            line-height: var(--md-sys-typescale-body-large-line-height);
+        }
+
+        .copy-sentence-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--md-sys-color-on-surface-variant);
+            padding: 0;
+            border-radius: 50%;
+            transition: all 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .copy-sentence-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: currentColor;
+            opacity: 0;
+            border-radius: inherit;
+            transition: opacity 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+        }
+
+        .copy-sentence-btn:hover {
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .copy-sentence-btn:hover::before {
+            opacity: 0.08;
+        }
+
+        .copy-sentence-btn:focus::before {
+            opacity: 0.12;
+        }
+
+        .copy-sentence-btn:active::before {
+            opacity: 0.16;
+        }
+
+        .copy-sentence-btn.copied {
+            color: var(--md-sys-color-success);
+        }
+
+        .copy-sentence-btn .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        .translation-cell {
+            max-width: 500px;
+            line-height: var(--md-sys-typescale-body-large-line-height);
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: var(--md-sys-typescale-body-large-size);
+        }
+
+        .year-badge {
+            background: var(--md-sys-color-tertiary-container);
+            color: var(--md-sys-color-on-tertiary-container);
+            padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+            border-radius: var(--md-sys-shape-corner-small);
+            font-size: var(--md-sys-typescale-body-small-size);
+            font-weight: var(--md-sys-typescale-label-large-weight);
+            line-height: var(--md-sys-typescale-label-large-line-height);
+            font-family: inherit;
+        }
+
+        .part-badge {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+            border-radius: var(--md-sys-shape-corner-small);
+            font-size: var(--md-sys-typescale-body-small-size);
+            font-weight: var(--md-sys-typescale-label-large-weight);
+            line-height: var(--md-sys-typescale-label-large-line-height);
+            font-family: inherit;
+            white-space: nowrap;
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: help;
+            transition: all 0.2s cubic-bezier(0.2, 0.0, 0, 1.0);
+        }
+
+        .part-badge:hover {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            transform: scale(1.02);
+            filter: brightness(95%);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: var(--md-sys-spacing-xxl);
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: var(--md-sys-typescale-title-large-size);
+            line-height: var(--md-sys-typescale-title-large-line-height);
+        }
+
+        .error-message {
+            background: var(--md-sys-color-error-container);
+            color: var(--md-sys-color-on-error-container);
+            padding: var(--md-sys-spacing-lg);
+            border-radius: var(--md-sys-shape-corner-medium);
+            border-left: 4px solid var(--md-sys-color-error);
+            margin-bottom: var(--md-sys-spacing-lg);
+            font-size: var(--md-sys-typescale-body-large-size);
+            line-height: var(--md-sys-typescale-body-large-line-height);
+        }
+
+        /* Mobile-first responsive design */
+        @media (max-width: 599px) {
+            body {
+                padding: var(--md-sys-spacing-sm);
+            }
+
+            .header {
+                padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-md);
+            }
+
+            .header h1 {
+                font-size: var(--md-sys-typescale-title-large-size);
+                line-height: var(--md-sys-typescale-title-large-line-height);
+            }
+
+            .controls {
+                padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-md);
+            }
+
+            .controls.scrolled {
+                padding: var(--md-sys-spacing-md);
+            }
+            
+            .search-section {
+                flex-direction: column;
+                gap: var(--md-sys-spacing-md);
+            }
+            
+            .search-box {
+                min-width: auto;
+            }
+            
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+                gap: var(--md-sys-spacing-md);
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: var(--md-sys-spacing-sm);
+            }
+
+            .multiselect-container {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .content {
+                padding: var(--md-sys-spacing-md);
+                min-height: calc(100vh - 180px);
+            }
+            
+            .results-table {
+                font-size: var(--md-sys-typescale-body-medium-size);
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: var(--md-sys-spacing-md);
+            }
+
+            .results-table th:nth-child(1), 
+            .results-table td:nth-child(1) {
+                min-width: 50px;
+                width: 10%;
+            }
+
+            .results-table th:nth-child(2), 
+            .results-table td:nth-child(2) {
+                min-width: 100px;
+                width: 20%;
+            }
+
+            .results-table th:nth-child(3), 
+            .results-table td:nth-child(3) {
+                min-width: 120px;
+                width: 25%;
+            }
+
+            .sentence-cell,
+            .translation-cell {
+                max-width: 280px;
+                white-space: normal;
+            }
+
+            .results-header {
+                flex-direction: column;
+                gap: var(--md-sys-spacing-md);
+                align-items: stretch;
+            }
+
+            .results-actions {
+                flex-direction: column;
+                gap: var(--md-sys-spacing-sm);
+                align-items: stretch;
+            }
+
+            .action-button {
+                justify-content: center;
+            }
+
+            .cache-status {
+                flex-direction: column;
+                gap: var(--md-sys-spacing-sm);
+                align-items: stretch;
+            }
+
+            .refresh-button {
+                align-self: center;
+                min-width: 140px;
+            }
+
+            .download-menu {
+                position: fixed;
+                top: auto;
+                bottom: var(--md-sys-spacing-md);
+                left: var(--md-sys-spacing-md);
+                right: var(--md-sys-spacing-md);
+                min-width: auto;
+            }
+        }
+
+        /* Tablet responsive design */
+        @media (min-width: 600px) and (max-width: 1023px) {
+            .container {
+                margin: 0 var(--md-sys-spacing-md);
+            }
+
+            .sentence-cell,
+            .translation-cell {
+                max-width: 350px;
+            }
+
+            .results-table th,
+            .results-table td {
+                padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-md);
+            }
+        }
+
+        /* Desktop enhancements */
+        @media (min-width: 1024px) {
+            .sentence-cell,
+            .translation-cell {
+                max-width: 600px;
+            }
+
+            .results-table th,
+            .results-table td {
+                padding: var(--md-sys-spacing-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>詞彙句子查找器</h1>
+            <p>歷屆學測英文試題句子資料庫</p>
+            
+            <div class="status-section">
+                <div class="status-text" id="statusText">準備載入資料...</div>
+                <div class="cache-status" id="cacheStatus" style="display: none;">
+                    <span id="cacheIndicator"></span>
+                    <button id="refreshButton" class="refresh-button" title="重新載入最新資料">
+                        <span class="material-symbols-outlined">refresh</span>
+                        重新載入
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-section">
+                <div class="search-box">
+                    <input type="text" id="wordSearchInput" class="search-input word-search-input" placeholder="輸入任何單字（會自動尋找所有變化形式）" disabled>
+                </div>
+            </div>
+
+            <div class="filter-section" style="display: none;">
+                <div class="filter-group">
+                    <label class="filter-label">年份：</label>
+                    <div class="multiselect-container" id="yearFilterContainer">
+                        <div class="multiselect-toggle" id="yearFilterToggle" disabled>
+                            <span>選擇年份</span>
+                            <span class="multiselect-arrow material-symbols-outlined">expand_more</span>
+                        </div>
+                        <div class="multiselect-dropdown" id="yearFilterDropdown">
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">題型：</label>
+                    <div class="multiselect-container" id="partFilterContainer">
+                        <div class="multiselect-toggle" id="partFilterToggle" disabled>
+                            <span>選擇題型</span>
+                            <span class="multiselect-arrow material-symbols-outlined">expand_more</span>
+                        </div>
+                        <div class="multiselect-dropdown" id="partFilterDropdown">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-mode-indicator" id="searchModeIndicator"></div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>正在載入資料中...</div>
+            </div>
+
+            <div id="resultsInfo" class="results-info" style="display: none;">
+                <div class="results-header">
+                    <span class="results-count" id="resultsCount"></span>
+                    <div class="results-actions">
+                        <div class="download-dropdown">
+                            <button id="downloadButton" class="action-button download-button" title="下載結果">
+                                <span class="material-symbols-outlined">download</span>
+                                下載
+                                <span class="material-symbols-outlined">expand_more</span>
+                            </button>
+                            <div class="download-menu" id="downloadMenu">
+                                <button onclick="downloadData('markdown')" class="download-option">
+                                    <span class="material-symbols-outlined">description</span>
+                                    Markdown (.md)
+                                </button>
+                                <button onclick="downloadData('tsv')" class="download-option">
+                                    <span class="material-symbols-outlined">table_view</span>
+                                    TSV (.tsv)
+                                </button>
+                                <button onclick="downloadData('excel')" class="download-option">
+                                    <span class="material-symbols-outlined">table_chart</span>
+                                    Excel (.xlsx)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+             <div id="errorMessage" class="error-message" style="display: none;"></div>
+            
+            <div id="resultsContainer" class="results-container">
+                <table id="resultsTable" class="results-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>年份</th>
+                            <th>題型</th>
+                            <th>來源</th>
+                            <th>英文句子</th>
+                            <th>中文翻譯</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="noResults" class="no-results" style="display: none;">
+                沒有找到符合條件的結果
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Google Apps Script 部署 URL（請填入您的部署 URL）
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx1WGutPq5TBle1TXEdGSpD84u9w97C36pmH_G6HxofF9SAgMW72I24UFR2nNubK6v3Lw/exec'; // 請將此替換為您的 Google Apps Script 部署 URL
+ 
+        // 全域變數
+        let allData = [];
+        let filteredData = [];
+        let years = new Set();
+        let parts = new Set();
+        let wordSearchResults = []; // 儲存單字搜尋的結果
+        
+        // 快取相關常數
+        const CACHE_KEY = 'vocabSentenceFinder_data';
+        const CACHE_TIMESTAMP_KEY = 'vocabSentenceFinder_lastVisit';
+        const CACHE_EXPIRY_HOURS = 24; // 24小時快取有效期
+ 
+        // DOM 元素
+        const wordSearchInput = document.getElementById('wordSearchInput');
+        const searchModeIndicator = document.getElementById('searchModeIndicator');
+        const yearFilterToggle = document.getElementById('yearFilterToggle');
+        const yearFilterDropdown = document.getElementById('yearFilterDropdown');
+        const partFilterToggle = document.getElementById('partFilterToggle');
+        const partFilterDropdown = document.getElementById('partFilterDropdown');
+        const statusText = document.getElementById('statusText');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultsInfo = document.getElementById('resultsInfo');
+        const resultsCount = document.getElementById('resultsCount');
+        const resultsTable = document.getElementById('resultsTable');
+        const resultsBody = document.getElementById('resultsBody');
+        const noResults = document.getElementById('noResults');
+
+        const downloadButton = document.getElementById('downloadButton');
+        const downloadMenu = document.getElementById('downloadMenu');
+        const filterSection = document.querySelector('.filter-section');
+        const cacheStatus = document.getElementById('cacheStatus');
+        const cacheIndicator = document.getElementById('cacheIndicator');
+        const refreshButton = document.getElementById('refreshButton');
+
+        // 全域狀態
+        let isDataLoaded = false;
+        let selectedYears = new Set();
+        let selectedParts = new Set();
+ 
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+ 
+        function initializeApp() {
+            // 設定事件監聽器
+            wordSearchInput.addEventListener('input', debounce(handleWordSearch, 300));
+            
+            // 複選篩選器事件
+            yearFilterToggle.addEventListener('click', () => toggleMultiselect('year'));
+            partFilterToggle.addEventListener('click', () => toggleMultiselect('part'));
+            
+            // 下載功能
+            downloadButton.addEventListener('click', () => toggleDownloadMenu());
+            
+            // 重新載入功能
+            refreshButton.addEventListener('click', () => {
+                refreshButton.disabled = true;
+                loadData(true).finally(() => {
+                    refreshButton.disabled = false;
+                });
+            });
+            
+            // 點擊外部關閉下拉選單
+            document.addEventListener('click', (e) => {
+                if (!yearFilterToggle.contains(e.target) && !yearFilterDropdown.contains(e.target)) {
+                    yearFilterDropdown.style.display = 'none';
+                    yearFilterToggle.setAttribute('aria-expanded', false);
+                }
+                if (!partFilterToggle.contains(e.target) && !partFilterDropdown.contains(e.target)) {
+                    partFilterDropdown.style.display = 'none';
+                    partFilterToggle.setAttribute('aria-expanded', false);
+                }
+                if (!downloadButton.contains(e.target) && !downloadMenu.contains(e.target)) {
+                    downloadMenu.style.display = 'none';
+                }
+            });
+
+            // 監聽滾動事件來處理 sticky 控制區域的視覺效果
+            setupStickyControls();
+
+            // 載入資料
+            loadData();
+        }
+
+        function setupStickyControls() {
+            const controls = document.querySelector('.controls');
+            let isScrolled = false;
+
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+                
+                if (currentScroll > 100 && !isScrolled) {
+                    controls.classList.add('scrolled');
+                    isScrolled = true;
+                } else if (currentScroll <= 100 && isScrolled) {
+                    controls.classList.remove('scrolled');
+                    isScrolled = false;
+                }
+            });
+        }
+ 
+        // 快取管理函數
+        function isCacheValid() {
+            const lastVisit = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+            if (!lastVisit) return false;
+            
+            const lastVisitTime = new Date(lastVisit);
+            const now = new Date();
+            const hoursDiff = (now - lastVisitTime) / (1000 * 60 * 60);
+            
+            return hoursDiff < CACHE_EXPIRY_HOURS;
+        }
+
+        function getCachedData() {
+            try {
+                const cachedData = localStorage.getItem(CACHE_KEY);
+                return cachedData ? JSON.parse(cachedData) : null;
+            } catch (error) {
+                console.warn('讀取快取資料失敗:', error);
+                return null;
+            }
+        }
+
+        function setCachedData(data) {
+            try {
+                localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+                localStorage.setItem(CACHE_TIMESTAMP_KEY, new Date().toISOString());
+                return true;
+            } catch (error) {
+                console.warn('儲存快取資料失敗:', error);
+                return false;
+            }
+        }
+
+        function clearCache() {
+            localStorage.removeItem(CACHE_KEY);
+            localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+        }
+
+        function showCacheStatus(isUsingCache, isOldCache = false) {
+            if (isUsingCache) {
+                cacheStatus.style.display = 'flex';
+                const lastVisit = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+                const lastVisitTime = lastVisit ? new Date(lastVisit) : new Date();
+                const timeAgo = formatTimeAgo(lastVisitTime);
+                
+                if (isOldCache) {
+                    cacheIndicator.textContent = `⚠️ 使用舊快取資料 (${timeAgo})`;
+                    cacheIndicator.className = 'cache-indicator old-cache';
+                } else {
+                    cacheIndicator.textContent = `💾 使用快取資料 (${timeAgo})`;
+                    cacheIndicator.className = 'cache-indicator using-cache';
+                }
+            } else {
+                cacheStatus.style.display = 'none';
+            }
+        }
+
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffMinutes = Math.floor(diffMs / (1000 * 60));
+            
+            if (diffHours >= 24) {
+                const diffDays = Math.floor(diffHours / 24);
+                return `${diffDays} 天前`;
+            } else if (diffHours >= 1) {
+                return `${diffHours} 小時前`;
+            } else if (diffMinutes >= 1) {
+                return `${diffMinutes} 分鐘前`;
+            } else {
+                return '剛剛';
+            }
+        }
+ 
+        async function loadData(forceRefresh = false) {
+            try {
+                showLoading(true);
+                
+                // 檢查是否可以使用快取
+                if (!forceRefresh && isCacheValid()) {
+                    const cachedData = getCachedData();
+                    if (cachedData && cachedData.length > 0) {
+                        updateStatus('正在載入快取資料...');
+                        allData = cachedData;
+                        
+                        updateStatus(`使用快取資料載入 ${allData.length} 筆資料！系統已準備就緒。`);
+                        showLoading(false);
+                        
+                        // 啟用所有功能
+                        enableAllFeatures();
+                        isDataLoaded = true;
+                        
+                        // 顯示快取狀態
+                        showCacheStatus(true);
+                        return;
+                    }
+                }
+                
+                // 載入新資料
+                updateStatus('正在從 Google Sheets 載入最新資料...');
+                showCacheStatus(false);
+ 
+                // 嘗試使用 GET 請求
+                let response;
+                try {
+                    response = await fetch(`${APPS_SCRIPT_URL}?action=getData`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                } catch (fetchError) {
+                    console.log('GET 請求失敗，嘗試 POST 請求...');
+                    // 如果 GET 失敗，嘗試 POST
+                    response = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'action=getData'
+                    });
+                }
+ 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+                }
+ 
+                const result = await response.json();
+                console.log('API 回應:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.error || result.message || '載入資料失敗');
+                }
+ 
+                // 處理資料
+                allData = processSheetData(result.data);
+                
+                // 儲存到快取
+                setCachedData(allData);
+                
+                updateStatus(`成功載入 ${allData.length} 筆最新資料！系統已準備就緒。`);
+                showLoading(false);
+                 
+                // 啟用所有功能
+                enableAllFeatures();
+                isDataLoaded = true;
+ 
+            } catch (error) {
+                console.error('載入資料時發生錯誤:', error);
+                
+                // 如果網路載入失敗，嘗試使用舊快取
+                const cachedData = getCachedData();
+                if (cachedData && cachedData.length > 0) {
+                    console.log('使用舊快取資料作為備用');
+                    allData = cachedData;
+                    updateStatus(`網路載入失敗，使用舊快取資料 (${allData.length} 筆)。系統已準備就緒。`);
+                    showLoading(false);
+                    enableAllFeatures();
+                    isDataLoaded = true;
+                    showCacheStatus(true, true);
+                } else {
+                showError('載入資料時發生錯誤: ' + error.message);
+                showLoading(false);
+                }
+            }
+        }
+ 
+        function processSheetData(sheetData) {
+            return sheetData.map(row => {
+                return {
+                    year: String(row['Year_code'] || row['year'] || ''), // 確保年份是字串
+                    part: String(row['Part'] || row['part'] || ''), // 確保題型是字串
+                    source: String(row['Source_code'] || row['source'] || ''),
+                    sentence: String(row['Sentence'] || row['sentence'] || ''),
+                    translation: String(row['Translation Traditional Chinese'] || row['translation'] || '')
+                };
+            }).filter(item => item.sentence && item.translation); // 過濾空資料
+        }
+ 
+        // 啟用所有功能
+        function enableAllFeatures() {
+            wordSearchInput.disabled = false;
+        }
+
+        // 切換複選下拉選單
+        function toggleMultiselect(type) {
+            if (!isDataLoaded) return;
+            
+            if (type === 'year') {
+                const isVisible = yearFilterDropdown.style.display === 'block';
+                yearFilterDropdown.style.display = isVisible ? 'none' : 'block';
+                yearFilterToggle.setAttribute('aria-expanded', !isVisible);
+                partFilterDropdown.style.display = 'none';
+                partFilterToggle.setAttribute('aria-expanded', false);
+            } else if (type === 'part') {
+                const isVisible = partFilterDropdown.style.display === 'block';
+                partFilterDropdown.style.display = isVisible ? 'none' : 'block';
+                partFilterToggle.setAttribute('aria-expanded', !isVisible);
+                yearFilterDropdown.style.display = 'none';
+                yearFilterToggle.setAttribute('aria-expanded', false);
+            }
+        }
+
+        // 更新複選狀態
+        function updateMultiselect(type) {
+            if (type === 'year') {
+                selectedYears.clear();
+                const checkboxes = yearFilterDropdown.querySelectorAll('input[type="checkbox"]:checked');
+                checkboxes.forEach(cb => selectedYears.add(cb.value));
+                
+                // 更新年份篩選器的顯示文字
+                const totalYears = yearFilterDropdown.querySelectorAll('input[type="checkbox"]').length;
+                updateFilterToggleText('year', totalYears);
+            } else if (type === 'part') {
+                selectedParts.clear();
+                const checkboxes = partFilterDropdown.querySelectorAll('input[type="checkbox"]:checked');
+                checkboxes.forEach(cb => selectedParts.add(cb.value));
+                
+                // 更新題型篩選器的顯示文字
+                const totalParts = partFilterDropdown.querySelectorAll('input[type="checkbox"]').length;
+                updateFilterToggleText('part', totalParts);
+            }
+            
+            // 重新執行篩選
+            applyFilters();
+        }
+        
+        // 更新篩選器按鈕的顯示文字
+        function updateFilterToggleText(type, total) {
+            if (type === 'year') {
+                const selectedCount = selectedYears.size;
+                yearFilterToggle.querySelector('span').textContent = 
+                    selectedCount === 0 ? '選擇年份' : 
+                    selectedCount === total ? '全部年份' : 
+                    `已選 ${selectedCount} 個年份`;
+            } else if (type === 'part') {
+                const selectedCount = selectedParts.size;
+                partFilterToggle.querySelector('span').textContent = 
+                    selectedCount === 0 ? '選擇題型' : 
+                    selectedCount === total ? '全部題型' : 
+                    `已選 ${selectedCount} 個題型`;
+            }
+        }
+        
+        // 應用篩選器
+        function applyFilters() {
+            if (wordSearchResults.length === 0) {
+                filteredData = [];
+                displayDataWithHighlight([], []);
+                return;
+            }
+            
+            filteredData = wordSearchResults.filter(item => {
+                // 年份篩選（複選）- 確保資料類型一致
+                const itemYear = String(item.year);
+                const matchesYear = selectedYears.size === 0 || selectedYears.has(itemYear);
+
+                // 題型篩選（複選）- 確保資料類型一致
+                const itemPart = String(item.part);
+                const matchesPart = selectedParts.size === 0 || selectedParts.has(itemPart);
+
+                return matchesYear && matchesPart;
+            });
+
+            // 如果有搜尋詞，則高亮顯示
+            const wordTerm = wordSearchInput.value.trim();
+            if (wordTerm) {
+                const variations = generateWordVariations(wordTerm);
+                displayDataWithHighlight(filteredData, variations);
+            } else {
+                displayData(filteredData);
+            }
+        }
+
+        function updateFilters(data) {
+            if (data.length === 0) {
+                filterSection.style.display = 'none';
+                yearFilterToggle.setAttribute('disabled', true);
+                partFilterToggle.setAttribute('disabled', true);
+                return;
+            }
+
+            filterSection.style.display = 'flex';
+            yearFilterToggle.removeAttribute('disabled');
+            partFilterToggle.removeAttribute('disabled');
+
+            const availableYears = Array.from(new Set(data.map(item => item.year))).sort();
+            const availableParts = Array.from(new Set(data.map(item => item.part))).sort();
+
+            // 更新年份篩選器
+            yearFilterDropdown.innerHTML = '';
+            availableYears.forEach(year => {
+                const option = document.createElement('div');
+                option.className = 'multiselect-option';
+                // 由於已重置篩選器狀態，所有選項都應該是未勾選狀態
+                const isChecked = selectedYears.has(year);
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `year-${year}`;
+                checkbox.value = year;
+                checkbox.checked = isChecked;
+                checkbox.addEventListener('change', () => updateMultiselect('year'));
+                
+                const label = document.createElement('label');
+                label.htmlFor = `year-${year}`;
+                label.textContent = year;
+                
+                option.appendChild(checkbox);
+                option.appendChild(label);
+                yearFilterDropdown.appendChild(option);
+            });
+
+            updateFilterToggleText('year', availableYears.length);
+
+            // 更新題型篩選器
+            partFilterDropdown.innerHTML = '';
+            availableParts.forEach(part => {
+                const option = document.createElement('div');
+                option.className = 'multiselect-option';
+                // 由於已重置篩選器狀態，所有選項都應該是未勾選狀態
+                const isChecked = selectedParts.has(part);
+                const partId = part.replace(/\s+/g, '-');
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `part-${partId}`;
+                checkbox.value = part;
+                checkbox.checked = isChecked;
+                checkbox.addEventListener('change', () => updateMultiselect('part'));
+                
+                const label = document.createElement('label');
+                label.htmlFor = `part-${partId}`;
+                label.textContent = part;
+                
+                option.appendChild(checkbox);
+                option.appendChild(label);
+                partFilterDropdown.appendChild(option);
+            });
+
+            updateFilterToggleText('part', availableParts.length);
+        }
+ 
+        // 詞形變化規則和詞幹提取功能
+        const morphologyRules = {
+            // 複數規則
+            plurals: [
+                { pattern: /ies$/, replacement: 'y' },        // cities -> city
+                { pattern: /ves$/, replacement: 'f' },        // lives -> life
+                { pattern: /ves$/, replacement: 'fe' },       // knives -> knife
+                { pattern: /ses$/, replacement: 's' },        // glasses -> glass
+                { pattern: /ches$/, replacement: 'ch' },      // watches -> watch
+                { pattern: /shes$/, replacement: 'sh' },      // dishes -> dish
+                { pattern: /xes$/, replacement: 'x' },        // boxes -> box
+                { pattern: /oes$/, replacement: 'o' },        // heroes -> hero
+                { pattern: /s$/, replacement: '' },           // cats -> cat
+            ],
+            // 動詞變化規則
+            verbs: [
+                // 過去式和過去分詞
+                { pattern: /ied$/, replacement: 'y' },        // studied -> study
+                { pattern: /ed$/, replacement: '' },          // walked -> walk
+                { pattern: /ed$/, replacement: 'e' },         // liked -> like
+                { pattern: /(.)ed$/, replacement: '$1' },     // stopped -> stop
+                
+                // 現在分詞
+                { pattern: /ying$/, replacement: 'y' },       // studying -> study
+                { pattern: /ing$/, replacement: '' },         // walking -> walk
+                { pattern: /ing$/, replacement: 'e' },        // liking -> like
+                { pattern: /(.)ing$/, replacement: '$1' },    // stopping -> stop
+                
+                // 第三人稱單數
+                { pattern: /ies$/, replacement: 'y' },        // flies -> fly
+                { pattern: /es$/, replacement: '' },          // goes -> go
+                { pattern: /s$/, replacement: '' },           // walks -> walk
+            ],
+            // 形容詞比較級和最高級
+            adjectives: [
+                { pattern: /iest$/, replacement: 'y' },       // happiest -> happy
+                { pattern: /est$/, replacement: '' },         // tallest -> tall
+                { pattern: /(.)est$/, replacement: '$1' },    // biggest -> big
+                { pattern: /ier$/, replacement: 'y' },        // happier -> happy
+                { pattern: /er$/, replacement: '' },          // taller -> tall
+                { pattern: /(.)er$/, replacement: '$1' },     // bigger -> big
+            ],
+            // 副詞
+            adverbs: [
+                { pattern: /ly$/, replacement: '' },          // quickly -> quick
+                { pattern: /ily$/, replacement: 'y' },        // happily -> happy
+            ]
+        };
+
+        // 不規則動詞表
+        const irregularVerbs = {
+            'was': ['be', 'is', 'am', 'are', 'been', 'being'],
+            'were': ['be', 'is', 'am', 'are', 'been', 'being'],
+            'been': ['be', 'is', 'am', 'are', 'was', 'were', 'being'],
+            'being': ['be', 'is', 'am', 'are', 'was', 'were', 'been'],
+            'went': ['go', 'goes', 'going', 'gone'],
+            'gone': ['go', 'goes', 'going', 'went'],
+            'did': ['do', 'does', 'doing', 'done'],
+            'done': ['do', 'does', 'doing', 'did'],
+            'had': ['have', 'has', 'having'],
+            'took': ['take', 'takes', 'taking', 'taken'],
+            'taken': ['take', 'takes', 'taking', 'took'],
+            'gave': ['give', 'gives', 'giving', 'given'],
+            'given': ['give', 'gives', 'giving', 'gave'],
+            'came': ['come', 'comes', 'coming'],
+            'saw': ['see', 'sees', 'seeing', 'seen'],
+            'seen': ['see', 'sees', 'seeing', 'saw'],
+            'got': ['get', 'gets', 'getting', 'gotten'],
+            'gotten': ['get', 'gets', 'getting', 'got'],
+            'made': ['make', 'makes', 'making'],
+            'said': ['say', 'says', 'saying'],
+            'thought': ['think', 'thinks', 'thinking'],
+            'found': ['find', 'finds', 'finding'],
+            'knew': ['know', 'knows', 'knowing', 'known'],
+            'known': ['know', 'knows', 'knowing', 'knew'],
+            'left': ['leave', 'leaves', 'leaving'],
+            'felt': ['feel', 'feels', 'feeling'],
+            'kept': ['keep', 'keeps', 'keeping'],
+            'told': ['tell', 'tells', 'telling'],
+            'heard': ['hear', 'hears', 'hearing'],
+            'brought': ['bring', 'brings', 'bringing'],
+            'bought': ['buy', 'buys', 'buying'],
+            'taught': ['teach', 'teaches', 'teaching'],
+            'caught': ['catch', 'catches', 'catching'],
+            'fought': ['fight', 'fights', 'fighting'],
+            'wrote': ['write', 'writes', 'writing', 'written'],
+            'written': ['write', 'writes', 'writing', 'wrote'],
+            'rode': ['ride', 'rides', 'riding', 'ridden'],
+            'ridden': ['ride', 'rides', 'riding', 'rode'],
+            'drove': ['drive', 'drives', 'driving', 'driven'],
+            'driven': ['drive', 'drives', 'driving', 'drove'],
+            'spoke': ['speak', 'speaks', 'speaking', 'spoken'],
+            'spoken': ['speak', 'speaks', 'speaking', 'spoke'],
+            'chose': ['choose', 'chooses', 'choosing', 'chosen'],
+            'chosen': ['choose', 'chooses', 'choosing', 'chose'],
+            'broke': ['break', 'breaks', 'breaking', 'broken'],
+            'broken': ['break', 'breaks', 'breaking', 'broke'],
+            'wore': ['wear', 'wears', 'wearing', 'worn'],
+            'worn': ['wear', 'wears', 'wearing', 'wore'],
+            'threw': ['throw', 'throws', 'throwing', 'thrown'],
+            'thrown': ['throw', 'throws', 'throwing', 'threw']
+        };
+
+        // 生成單字的所有可能變化形式
+        function generateWordVariations(word) {
+            const variations = new Set([word.toLowerCase()]);
+            
+            // 檢查不規則動詞
+            const lowerWord = word.toLowerCase();
+            if (irregularVerbs[lowerWord]) {
+                irregularVerbs[lowerWord].forEach(variant => variations.add(variant));
+            }
+            
+            // 反向查找不規則動詞
+            for (const [irregularForm, baseVariants] of Object.entries(irregularVerbs)) {
+                if (baseVariants.includes(lowerWord)) {
+                    variations.add(irregularForm);
+                    baseVariants.forEach(variant => variations.add(variant));
+                }
+            }
+
+            // 應用形態學規則
+            Object.values(morphologyRules).forEach(ruleSet => {
+                ruleSet.forEach(rule => {
+                    if (rule.pattern.test(lowerWord)) {
+                        const stem = lowerWord.replace(rule.pattern, rule.replacement);
+                        variations.add(stem);
+                        
+                        // 從詞幹生成其他形式
+                        generateFormsFromStem(stem).forEach(form => variations.add(form));
+                    }
+                });
+            });
+
+            // 從原始單字生成其他形式
+            generateFormsFromStem(lowerWord).forEach(form => variations.add(form));
+
+            return Array.from(variations);
+        }
+
+        // 從詞幹生成各種變化形式
+        function generateFormsFromStem(stem) {
+            const forms = new Set([stem]);
+            
+            // 生成複數形式
+            forms.add(stem + 's');
+            forms.add(stem + 'es');
+            if (stem.endsWith('y')) {
+                forms.add(stem.slice(0, -1) + 'ies');
+            }
+            if (stem.endsWith('f')) {
+                forms.add(stem.slice(0, -1) + 'ves');
+            }
+            if (stem.endsWith('fe')) {
+                forms.add(stem.slice(0, -2) + 'ves');
+            }
+
+            // 生成動詞形式
+            forms.add(stem + 'ed');
+            forms.add(stem + 'ing');
+            if (stem.endsWith('e')) {
+                forms.add(stem + 'd');
+                forms.add(stem.slice(0, -1) + 'ing');
+            }
+            if (stem.endsWith('y')) {
+                forms.add(stem.slice(0, -1) + 'ied');
+                forms.add(stem.slice(0, -1) + 'ying');
+            }
+            
+            // 雙寫輔音字母的規則
+            if (stem.length >= 3 && /[bcdfghjklmnpqrstvwxyz]$/.test(stem) && 
+                /[aeiou][bcdfghjklmnpqrstvwxyz]$/.test(stem)) {
+                const doubled = stem + stem.slice(-1);
+                forms.add(doubled + 'ed');
+                forms.add(doubled + 'ing');
+            }
+
+            // 生成形容詞比較級和最高級
+            forms.add(stem + 'er');
+            forms.add(stem + 'est');
+            if (stem.endsWith('y')) {
+                forms.add(stem.slice(0, -1) + 'ier');
+                forms.add(stem.slice(0, -1) + 'iest');
+            }
+
+            // 生成副詞
+            forms.add(stem + 'ly');
+            if (stem.endsWith('y')) {
+                forms.add(stem.slice(0, -1) + 'ily');
+            }
+
+            return Array.from(forms);
+        }
+
+
+
+        // 重置篩選器狀態
+        function resetFilters() {
+            selectedYears.clear();
+            selectedParts.clear();
+        }
+
+        // 處理單字搜尋
+        function handleWordSearch() {
+            if (!isDataLoaded) return;
+            
+            const wordTerm = wordSearchInput.value.trim();
+            
+            if (!wordTerm) {
+                searchModeIndicator.style.display = 'none';
+                resultsTable.style.display = 'none';
+                resultsInfo.style.display = 'none';
+                noResults.style.display = 'none';
+                filterSection.style.display = 'none';
+                wordSearchResults = [];
+                filteredData = [];
+                resetFilters(); // 清空搜尋時也重置篩選器
+                return;
+            }
+ 
+            // 每次進行新搜尋時重置篩選器狀態
+            resetFilters();
+            
+            const variations = generateWordVariations(wordTerm);
+            searchModeIndicator.style.display = 'block';
+            searchModeIndicator.textContent = `正在搜尋「${wordTerm}」的所有變化形式 (${variations.length} 種變化)`;
+
+            wordSearchResults = allData.filter(item => {
+                const sentence = item.sentence.toLowerCase();
+                return variations.some(variation => {
+                    const regex = new RegExp(`\\b${escapeRegExp(variation)}\\b`, 'i');
+                    return regex.test(sentence);
+                });
+            });
+
+            updateFilters(wordSearchResults);
+ 
+            // 應用篩選器
+            applyFilters();
+        }
+
+        // 轉義正則表達式特殊字符
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // 複製單個句子功能
+        async function copySentence(sentence, button) {
+            try {
+                await navigator.clipboard.writeText(sentence);
+                
+                // 更新按鈕狀態
+                const originalIcon = button.innerHTML;
+                button.innerHTML = '<span class="material-symbols-outlined">check</span>';
+                button.classList.add('copied');
+                
+                // 2秒後恢復原狀
+                setTimeout(() => {
+                    button.innerHTML = originalIcon;
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                console.error('複製失敗:', err);
+                
+                // 如果複製失敗，顯示錯誤狀態
+                const originalIcon = button.innerHTML;
+                button.innerHTML = '<span class="material-symbols-outlined">error</span>';
+                button.style.color = 'var(--md-sys-color-error)';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalIcon;
+                    button.style.color = '';
+                }, 2000);
+            }
+        }
+
+
+
+        // 切換下載選單
+        function toggleDownloadMenu() {
+            const isVisible = downloadMenu.style.display === 'block';
+            downloadMenu.style.display = isVisible ? 'none' : 'block';
+        }
+
+        // 下載功能
+        function downloadData(format) {
+            if (!filteredData || filteredData.length === 0) {
+                alert('沒有可下載的結果');
+                return;
+            }
+
+            downloadMenu.style.display = 'none';
+
+            const headers = ['年份', '題型', '來源', '英文句子', '中文翻譯'];
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+            
+            if (format === 'markdown') {
+                downloadMarkdown(headers, filteredData, timestamp);
+            } else if (format === 'tsv') {
+                downloadTSV(headers, filteredData, timestamp);
+            } else if (format === 'excel') {
+                downloadExcel(headers, filteredData, timestamp);
+            }
+        }
+
+        // 下載 Markdown 格式
+        function downloadMarkdown(headers, data, timestamp) {
+            const separator = '|' + headers.map(() => '---').join('|') + '|';
+            const headerRow = '|' + headers.join('|') + '|';
+            const dataRows = data.map(item => 
+                `|${item.year}|${item.part}|${item.source}|${item.sentence}|${item.translation}|`
+            );
+
+            const content = [headerRow, separator, ...dataRows].join('\n');
+            downloadFile(content, `vocabulary_results_${timestamp}.md`, 'text/markdown');
+        }
+
+        // 下載 TSV 格式
+        function downloadTSV(headers, data, timestamp) {
+            const rows = data.map(item => [
+                item.year,
+                item.part,
+                item.source,
+                item.sentence,
+                item.translation
+            ]);
+
+            const content = [headers, ...rows]
+                .map(row => row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join('\t'))
+                .join('\n');
+
+            downloadFile(content, `vocabulary_results_${timestamp}.tsv`, 'text/tab-separated-values');
+        }
+
+        // 下載 Excel 格式 (.xlsx)
+        function downloadExcel(headers, data, timestamp) {
+            try {
+                // 準備資料陣列，第一行是標題
+                const worksheetData = [headers];
+                
+                // 加入資料行
+                data.forEach(item => {
+                    worksheetData.push([
+                        String(item.year || ''),
+                        String(item.part || ''),
+                        String(item.source || ''),
+                        String(item.sentence || ''),
+                        String(item.translation || '')
+                    ]);
+                });
+
+                // 建立工作表
+                const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+                // 設定欄寬
+                const columnWidths = [
+                    { wch: 8 },   // 年份
+                    { wch: 15 },  // 題型
+                    { wch: 12 },  // 來源
+                    { wch: 50 },  // 英文句子
+                    { wch: 50 }   // 中文翻譯
+                ];
+                worksheet['!cols'] = columnWidths;
+
+                // 建立工作簿
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, '詞彙搜尋結果');
+
+                // 下載檔案
+                const filename = `vocabulary_results_${timestamp}.xlsx`;
+                XLSX.writeFile(workbook, filename);
+
+            } catch (error) {
+                console.error('生成 Excel 檔案時發生錯誤:', error);
+                alert('生成 Excel 檔案時發生錯誤，請稍後再試');
+            }
+        }
+
+        // 通用下載文件函數
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // 帶高亮的資料顯示函數
+        function displayDataWithHighlight(data, highlightWords) {
+            if (data.length === 0) {
+                resultsTable.style.display = 'none';
+                resultsInfo.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            resultsTable.style.display = 'table';
+            resultsInfo.style.display = 'block';
+            resultsCount.textContent = `找到 ${data.length} 筆結果`;
+
+            // 清空表格
+            resultsBody.innerHTML = '';
+
+            // 填充資料
+            data.forEach(item => {
+                const row = document.createElement('tr');
+
+                const yearCell = document.createElement('td');
+                const yearBadge = document.createElement('span');
+                yearBadge.classList.add('year-badge');
+                yearBadge.textContent = item.year;
+                yearCell.appendChild(yearBadge);
+                row.appendChild(yearCell);
+
+                const partCell = document.createElement('td');
+                const partBadge = document.createElement('span');
+                partBadge.classList.add('part-badge');
+                partBadge.textContent = item.part;
+                partBadge.title = item.part;
+                partCell.appendChild(partBadge);
+                row.appendChild(partCell);
+
+                const sourceCell = document.createElement('td');
+                sourceCell.textContent = item.source;
+                row.appendChild(sourceCell);
+
+                const sentenceCell = document.createElement('td');
+                sentenceCell.classList.add('sentence-cell');
+                
+                // 創建句子內容容器
+                const sentenceContent = document.createElement('div');
+                sentenceContent.classList.add('sentence-content');
+                
+                // 創建句子文字容器
+                const sentenceText = document.createElement('div');
+                sentenceText.classList.add('sentence-text');
+                sentenceText.innerHTML = highlightText(item.sentence, highlightWords);
+                
+                // 創建複製按鈕
+                const copyButton = document.createElement('button');
+                copyButton.classList.add('copy-sentence-btn');
+                copyButton.innerHTML = '<span class="material-symbols-outlined">content_copy</span>';
+                copyButton.title = '複製句子';
+                copyButton.addEventListener('click', () => copySentence(item.sentence, copyButton));
+                
+                sentenceContent.appendChild(sentenceText);
+                sentenceContent.appendChild(copyButton);
+                sentenceCell.appendChild(sentenceContent);
+                row.appendChild(sentenceCell);
+
+                const translationCell = document.createElement('td');
+                translationCell.classList.add('translation-cell');
+                translationCell.textContent = item.translation;
+                row.appendChild(translationCell);
+
+                resultsBody.appendChild(row);
+            });
+        }
+
+        // 高亮文字函數
+        function highlightText(text, words) {
+            let highlightedText = text;
+            
+            words.forEach(word => {
+                if (word.length > 0) {
+                    const regex = new RegExp(`\\b(${escapeRegExp(word)})\\b`, 'gi');
+                    highlightedText = highlightedText.replace(regex, '<span class="word-match">$1</span>');
+                }
+            });
+            
+            return highlightedText;
+        }
+
+        function displayData(data) {
+            if (data.length === 0) {
+                resultsTable.style.display = 'none';
+                resultsInfo.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            resultsTable.style.display = 'table';
+            resultsInfo.style.display = 'block';
+            resultsCount.textContent = `找到 ${data.length} 筆結果`;
+
+            // 清空表格
+            resultsBody.innerHTML = '';
+
+            // 填充資料
+            data.forEach(item => {
+                const row = document.createElement('tr');
+
+                const yearCell = document.createElement('td');
+                const yearBadge = document.createElement('span');
+                yearBadge.classList.add('year-badge');
+                yearBadge.textContent = item.year;
+                yearCell.appendChild(yearBadge);
+                row.appendChild(yearCell);
+
+                const partCell = document.createElement('td');
+                const partBadge = document.createElement('span');
+                partBadge.classList.add('part-badge');
+                partBadge.textContent = item.part;
+                partBadge.title = item.part;
+                partCell.appendChild(partBadge);
+                row.appendChild(partCell);
+
+                const sourceCell = document.createElement('td');
+                sourceCell.textContent = item.source;
+                row.appendChild(sourceCell);
+
+                const sentenceCell = document.createElement('td');
+                sentenceCell.classList.add('sentence-cell');
+                
+                // 創建句子內容容器
+                const sentenceContent = document.createElement('div');
+                sentenceContent.classList.add('sentence-content');
+                
+                // 創建句子文字容器
+                const sentenceText = document.createElement('div');
+                sentenceText.classList.add('sentence-text');
+                sentenceText.textContent = item.sentence;
+                
+                // 創建複製按鈕
+                const copyButton = document.createElement('button');
+                copyButton.classList.add('copy-sentence-btn');
+                copyButton.innerHTML = '<span class="material-symbols-outlined">content_copy</span>';
+                copyButton.title = '複製句子';
+                copyButton.addEventListener('click', () => copySentence(item.sentence, copyButton));
+                
+                sentenceContent.appendChild(sentenceText);
+                sentenceContent.appendChild(copyButton);
+                sentenceCell.appendChild(sentenceContent);
+                row.appendChild(sentenceCell);
+
+                const translationCell = document.createElement('td');
+                translationCell.classList.add('translation-cell');
+                translationCell.textContent = item.translation;
+                row.appendChild(translationCell);
+
+                resultsBody.appendChild(row);
+            });
+        }
+
+        function showLoading(show) {
+            loading.style.display = show ? 'block' : 'none';
+        }
+
+        function updateStatus(message) {
+            statusText.textContent = message;
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // 防抖函數
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 移除這些函數，因為我們使用 Apps Script
+        // async function fetchGoogleSheetsData() { ... }
+        // function parseSheetData(sheetData) { ... }
+    </script>
+</body>
+</html>
