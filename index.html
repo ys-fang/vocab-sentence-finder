@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>vocabGem - 學測英文詞彙例句寶庫</title>
+    <title>VocabGem - 學測英文詞彙例句寶庫</title>
     
     <!-- Google Material Design 3 (Material You) -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -1425,7 +1425,7 @@
 
     <div class="container">
         <div class="header">
-            <h1>vocabGem <span style="font-size: 0.7em; color: var(--md-sys-color-on-surface-variant);">詞彙寶石</span></h1>
+            <h1>VocabGem <span style="font-size: 0.7em; color: var(--md-sys-color-on-surface-variant);">詞彙寶石</span></h1>
             <p>挖掘學測英文考題中的詞彙寶藏 - 每個例句都是珍貴的學習資源</p>
             
             <div class="status-section">
@@ -1443,7 +1443,7 @@
         <div class="controls">
             <div class="search-section">
                 <div class="search-box">
-                    <input type="text" id="wordSearchInput" class="search-input word-search-input" placeholder="輸入單字，在 vocabGem 中挖掘珍貴的例句寶石 💎" disabled>
+                    <input type="text" id="wordSearchInput" class="search-input word-search-input" placeholder="輸入單字，在 VocabGem 中挖掘珍貴的例句寶石 💎" disabled>
                 </div>
             </div>
 
@@ -2511,7 +2511,7 @@
             
             const variations = generateWordVariations(wordTerm);
             searchModeIndicator.style.display = 'block';
-            searchModeIndicator.textContent = `正在 vocabGem 中搜尋「${wordTerm}」💎 涵蓋 ${variations.length} 種詞形變化，為您挖掘珍貴的學習寶石`;
+            searchModeIndicator.textContent = `正在 VocabGem 中搜尋「${wordTerm}」💎 涵蓋 ${variations.length} 種詞形變化，為您挖掘珍貴的學習寶石`;
 
             wordSearchResults = allData.filter(item => {
                 const sentence = item.sentence.toLowerCase();
@@ -2584,7 +2584,7 @@
                 compactToggle.title = '切換緊湊檢視模式';
                 
                 // 記住使用者偏好
-                localStorage.setItem('vocabGem_compactMode', 'false');
+                localStorage.setItem('VocabGem_compactMode', 'false');
             } else {
                 // 開啟緊湊模式
                 body.classList.add('compact-mode');
@@ -2592,13 +2592,13 @@
                 compactToggle.title = '切換正常檢視模式';
                 
                 // 記住使用者偏好
-                localStorage.setItem('vocabGem_compactMode', 'true');
+                localStorage.setItem('VocabGem_compactMode', 'true');
             }
         }
 
         // 初始化緊湊模式偏好設定
         function initializeCompactMode() {
-            const savedCompactMode = localStorage.getItem('vocabGem_compactMode');
+            const savedCompactMode = localStorage.getItem('VocabGem_compactMode');
             if (savedCompactMode === 'true') {
                 document.body.classList.add('compact-mode');
                 const compactIcon = compactToggle.querySelector('.material-symbols-outlined');
@@ -2724,7 +2724,7 @@
                     new docxLib.Paragraph({
                         children: [
                             new docxLib.TextRun({
-                                text: "vocabGem 詞彙寶石挖掘結果",
+                                text: "VocabGem 詞彙寶石挖掘結果",
                                 bold: true,
                                 size: 32, // 16pt
                             }),
